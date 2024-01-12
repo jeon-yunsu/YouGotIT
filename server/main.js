@@ -5,14 +5,14 @@ const session = require('express-session');
 const path = require('path');
 const app = express();
 
-const home = require('./routes/index');
-const auth = require('./routes/auth');
-const categories = require('./routes/categories');
-const search = require('./routes/search');
-const userInfo = require('./routes/userInfo');
-const cart = require('./routes/cart');
-const payment = require('./routes/payment');
-const lecture = require('./routes/lecture');
+const homeRoutes = require('./routes/index');
+const authRoutes = require('./routes/auth');
+const categoriesRoutes = require('./routes/categories');
+const searchRoutes = require('./routes/search');
+const userInfoRoutes = require('./routes/userInfo');
+const cartRoutes = require('./routes/cart');
+const paymentRoutes = require('./routes/payment');
+const lectureRoutes = require('./routes/lecture');
 
 // 미들웨어 등록
 app.use(bodyParser.urlencoded({extended:true}));
@@ -29,14 +29,14 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 라우터 등록
-app.use('/', home);
-app.use('/api/auth', auth);
-app.use('/api/categories', categories);
-app.use('/api/search-list', search);
-app.use('/api/userInfo', userInfo);
-app.use('/api/cart', cart);
-app.use('/api/modify', payment);
-app.use('/api/lecture', lecture);
+app.use('/', homeRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoriesRoutes);
+app.use('/api/search-list', searchRoutes);
+app.use('/api/userInfo', userInfoRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/modify', paymentRoutes);
+app.use('/api/lecture', lectureRoutes);
 
 
 app.listen(4000, () => {
