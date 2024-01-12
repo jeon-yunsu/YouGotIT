@@ -1,5 +1,5 @@
 const express = require("express");
-const mysql = require("./mysql");
+const mysql = require("../database/mysql");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
