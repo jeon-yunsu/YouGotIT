@@ -4,98 +4,6 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 
-// 인기 강의 출력
-router.get("/hotLecture", (req, res) => {
-  // MySQL 연결
-  mysql.getConnection((error, conn) => {
-    if (error) {
-      console.log(error);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-
-    // SQL 쿼리 실행
-    const query = `
-      SELECT
-        l.LectureID,
-        l.LectureImageURL,
-        l.Title,
-        i.InstructorName,
-        l.LecturePrice,
-        AVG(c.Rating) AS AverageRating
-      FROM
-          Lectures l
-      JOIN
-          Instructor i ON l.InstructorID = i.InstructorID
-      JOIN 
-          Comments c ON l.LectureID = c.LectureID 
-      GROUP BY
-          l.LectureImageURL, l.Title, i.InstructorName, l.LecturePrice
-      ORDER BY
-          AverageRating DESC
-      LIMIT 5;
-      `;
-
-    conn.query(query, (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-      } else {
-        res.json(results);
-      }
-
-      // MySQL 연결 종료
-      conn.release();
-    });
-  });
-});
-
-// 최신 강의 출력
-router.get("/newLecture", (req, res) => {
-  // MySQL 연결
-  mysql.getConnection((error, conn) => {
-    if (error) {
-      console.log(error);
-      res.status(500).send("Internal Server Error");
-      return;
-    }
-
-    // SQL 쿼리 실행
-    const query = `
-        SELECT
-          l.LectureID,
-          l.LectureImageURL,
-          l.Title,
-          i.InstructorName,
-          l.LecturePrice,
-          AVG(c.Rating) AS AverageRating,
-          l.UploadDate
-        FROM
-          Lectures l
-        JOIN
-          Instructor i ON l.InstructorID = i.InstructorID
-        JOIN 
-          Comments c ON l.LectureID = c.LectureID 
-        GROUP BY
-          l.LectureID, l.LectureImageURL, l.Title, i.InstructorName, l.LecturePrice, l.UploadDate
-        ORDER BY l.UploadDate DESC
-        LIMIT 5;
-      `;
-
-    conn.query(query, (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-      } else {
-        res.json(results);
-      }
-
-      // MySQL 연결 종료
-      conn.release();
-    });
-  });
-});
-
 //강의 상세정보 출력(수강 신청 전)
 router.get("/:lectureId", (req, res) => {
   // const userId = req.headers["userid"];
@@ -400,7 +308,7 @@ router.post("/update-review", async (req, res) => {
   }
 });
 
-//해당 강의의 목차와 정보를 출력
+//  
 router.get("/:lectureId/watch", (req, res) => {
   console.log(req.params);
   const lectureId = req.params.lectureId;

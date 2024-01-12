@@ -100,37 +100,38 @@ mysql.getConnection((error, conn) => {
   
 //사용자 프로필 이미지 변경
 router.post("/update-profileImage", async (req, res) => {
-try {
-    const userId = req.body.UserID;
-    const profileImage = req.body.ProfileImage;
-    console.log(profileImage, userId);
+    try {
+        console.log(req.body);
+        const userId = req.body.UserID;
+        const profileImage = req.body.ProfileImage;
+        console.log(profileImage, userId);
 
 
-    mysql.getConnection((error, conn) => {
-    if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-    }
-
-    conn.query(
-        "UPDATE Users u SET u.ProfileImage = ? WHERE u.UserID = ?",
-        [profileImage, userId],
-        (err, result) => {
-        console.log(result);
-        if (err) {
-            console.log(err);
+        mysql.getConnection((error, conn) => {
+        if (error) {
+            console.log(error);
             res.status(500).send("Internal Server Error");
             return;
         }
-        conn.release();
-        }
-    );
-    });
-} catch (error) {
+
+        conn.query(
+            "UPDATE Users u SET u.ProfileImage = ? WHERE u.UserID = ?",
+            [profileImage, userId],
+            (err, result) => {
+            console.log(result);
+            if (err) {
+                console.log(err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+            conn.release();
+            }
+        );
+        });
+    } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
-}
+    }
 });
   
 //닉네임 수정 
@@ -158,150 +159,151 @@ try {
             res.status(500).send("Internal Server Error");
             return;
         }
+        res.send(JSON.stringify(result));
         conn.release();
         }
     );
     });
-} catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-}
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
   
 //전화번호 변경
 router.post("/update-cellphone", async (req, res) => {
-try {
-    const userId = req.body.UserID;
-    const userCellPhone = req.body.UserCellPhone;
-    console.log(userCellPhone, userId);
+    try {
+        const userId = req.body.UserID;
+        const userCellPhone = req.body.UserCellPhone;
+        console.log(userCellPhone, userId);
 
 
-    mysql.getConnection((error, conn) => {
-    if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-    }
-
-    conn.query(
-        "UPDATE Users u SET u.userCellPhone = ? WHERE u.UserID = ?",
-        [userCellPhone, userId],
-        (err, result) => {
-        console.log(result);
-        if (err) {
-            console.log(err);
+        mysql.getConnection((error, conn) => {
+        if (error) {
+            console.log(error);
             res.status(500).send("Internal Server Error");
             return;
         }
-        conn.release();
-        }
-    );
-    });
-} catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-}
+
+        conn.query(
+            "UPDATE Users u SET u.userCellPhone = ? WHERE u.UserID = ?",
+            [userCellPhone, userId],
+            (err, result) => {
+            console.log(result);
+            if (err) {
+                console.log(err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+            conn.release();
+            }
+        );
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
   
 //유저 소개 변경
 router.post("/update-introduction", async (req, res) => {
-try {
-    const userId = req.body.UserID;
-    const introduction = req.body.Introduction;
-    console.log(introduction, userId);
+    try {
+        const userId = req.body.UserID;
+        const introduction = req.body.Introduction;
+        console.log(introduction, userId);
 
 
-    mysql.getConnection((error, conn) => {
-    if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-    }
-
-    conn.query(
-        "UPDATE Users u SET u.Introduction = ? WHERE u.UserID = ?",
-        [introduction, userId],
-        (err, result) => {
-        console.log(result);
-        if (err) {
-            console.log(err);
+        mysql.getConnection((error, conn) => {
+        if (error) {
+            console.log(error);
             res.status(500).send("Internal Server Error");
             return;
         }
-        conn.release();
-        }
-    );
-    });
-} catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-}
+
+        conn.query(
+            "UPDATE Users u SET u.Introduction = ? WHERE u.UserID = ?",
+            [introduction, userId],
+            (err, result) => {
+            console.log(result);
+            if (err) {
+                console.log(err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+            conn.release();
+            }
+        );
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
   
 //비밀번호 변경
 router.post("/update-password", async (req, res) => {
-try {
-    const userId = req.body.UserID;
-    const password = req.body.Password;
-    const newPassword = req.body.NewPassword;
-    console.log("userId: " + userId + " Password: " + password + " newPassword: " + newPassword);
+    try {
+        const userId = req.body.UserID;
+        const password = req.body.Password;
+        const newPassword = req.body.NewPassword;
+        console.log("userId: " + userId + " Password: " + password + " newPassword: " + newPassword);
 
 
-    mysql.getConnection((error, conn) => {
-    if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-    }
-
-    conn.query(
-        "SELECT UserID, Password FROM Users WHERE UserID = ?",
-        [userId],
-        (err, result) => {
-        console.log(result);
-        if (err) {
-            console.log(err);
+        mysql.getConnection((error, conn) => {
+        if (error) {
+            console.log(error);
             res.status(500).send("Internal Server Error");
             return;
         }
 
-        if (result.length === 0) {
-            console.log("cannot find user");
-            res.status(404).send("User not found");
-            return;
-        }
-
-        const hashedPassword = result[0].Password;
-        if (bcrypt.compareSync(password, hashedPassword)) {
-            const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
-
-            conn.query(
-            "UPDATE Users SET Password = ? WHERE UserID = ?",
-            [hashedNewPassword, userId],
+        conn.query(
+            "SELECT UserID, Password FROM Users WHERE UserID = ?",
+            [userId],
             (err, result) => {
-                console.log(result);
-                if (err) {
+            console.log(result);
+            if (err) {
                 console.log(err);
                 res.status(500).send("Internal Server Error");
                 return;
-                }
-                res.status(200).send("Password changed successfully");
             }
-            )
 
-        } else {
-            console.log("fail");
-            res.status(401).send("현재 비밀번호가 틀렸습니다");
-        }
+            if (result.length === 0) {
+                console.log("cannot find user");
+                res.status(404).send("User not found");
+                return;
+            }
 
-        conn.release();
-        }
-    );
-    });
-} catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-}
+            const hashedPassword = result[0].Password;
+            if (bcrypt.compareSync(password, hashedPassword)) {
+                const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+
+                conn.query(
+                "UPDATE Users SET Password = ? WHERE UserID = ?",
+                [hashedNewPassword, userId],
+                (err, result) => {
+                    console.log(result);
+                    if (err) {
+                    console.log(err);
+                    res.status(500).send("Internal Server Error");
+                    return;
+                    }
+                    res.status(200).send("Password changed successfully");
+                }
+                )
+
+            } else {
+                console.log("fail");
+                res.status(401).send("현재 비밀번호가 틀렸습니다");
+            }
+
+            conn.release();
+            }
+        );
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 //수강중인 강의 출력
@@ -350,64 +352,64 @@ router.get("/cours", (req, res) => {
   
 // 회원탈퇴
 router.post("/delete-user", async (req, res) => {
-try {
-    const userId = req.body.UserID;
-    const userEmail = req.body.UserEmail;
-    const inputPassword = req.body.Password;
-    console.log("userId: " + userId + " Password: " + inputPassword + " userEmail: " + userEmail);
+    try {
+        const userId = req.body.UserID;
+        const userEmail = req.body.UserEmail;
+        const inputPassword = req.body.Password;
+        console.log("userId: " + userId + " Password: " + inputPassword + " userEmail: " + userEmail);
 
-    mysql.getConnection((error, conn) => {
-    if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-    }
-
-    conn.query(
-        "SELECT UserID, Password FROM Users WHERE UserID = ? AND UserEmail = ?",
-        [userId, userEmail],
-        async (err, result) => {
-        console.log(result);
-        if (err) {
-            console.log(err);
+        mysql.getConnection((error, conn) => {
+        if (error) {
+            console.log(error);
             res.status(500).send("Internal Server Error");
             return;
         }
 
-        if (result.length === 0) {
-            console.log("cannot find user");
-            res.status(404).send("User not found");
-            return;
-        }
-
-        const hashedPassword = result[0].Password;
-
-        if (await bcrypt.compare(inputPassword, hashedPassword)) {
-            conn.query("DELETE FROM Users WHERE UserID = ?",
-            [userId],
-            (err, result) => {
-                console.log(result);
-                if (err) {
+        conn.query(
+            "SELECT UserID, Password FROM Users WHERE UserID = ? AND UserEmail = ?",
+            [userId, userEmail],
+            async (err, result) => {
+            console.log(result);
+            if (err) {
                 console.log(err);
                 res.status(500).send("Internal Server Error");
                 return;
-                }
-                res.status(200).send("User deleted successfully");
             }
-            );
-        } else {
-            console.log("password does not match");
-            res.status(401).send("Password does not match");
-        }
 
-        conn.release();
-        }
-    );
-    });
-} catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-}
+            if (result.length === 0) {
+                console.log("cannot find user");
+                res.status(404).send("User not found");
+                return;
+            }
+
+            const hashedPassword = result[0].Password;
+
+            if (await bcrypt.compare(inputPassword, hashedPassword)) {
+                conn.query("DELETE FROM Users WHERE UserID = ?",
+                [userId],
+                (err, result) => {
+                    console.log(result);
+                    if (err) {
+                    console.log(err);
+                    res.status(500).send("Internal Server Error");
+                    return;
+                    }
+                    res.status(200).send("User deleted successfully");
+                }
+                );
+            } else {
+                console.log("password does not match");
+                res.status(401).send("Password does not match");
+            }
+
+            conn.release();
+            }
+        );
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
   
 // router.post("/api/userInfo/delete-user", async (req, res) => {
