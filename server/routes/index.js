@@ -104,6 +104,7 @@ router.get("/", (req, res) => {
             });
             return;
           }
+          console.log(userInfo);
 
           const combinedResults = {
             hotLecture: hotLecture,

@@ -245,10 +245,17 @@ router.post("/update-password", async (req, res) => {
     try {
         const userId = req.body.UserID;
         const password = req.body.Password;
+        const passwordCheck = req.body.PasswordCheck;
         const newPassword = req.body.NewPassword;
         console.log("userId: " + userId + " Password: " + password + " newPassword: " + newPassword);
 
 
+        if(password !== passwordCheck) {
+            console.log("passwords do not match");
+            res.status(400).send("Passwords do not match");
+            return;
+        }
+        
         mysql.getConnection((error, conn) => {
         if (error) {
             console.log(error);
@@ -412,60 +419,54 @@ router.post("/delete-user", async (req, res) => {
     }
 });
   
-// router.post("/api/userInfo/delete-user", async (req, res) => {
-//   try {
-//     const userId = req.body.UserID;
-//     const userEmail = req.body.UserEmail;
-//     const inputPassword = req.body.Password;
-//     console.log("userId: " + userId + " Password: " + inputPassword + " userEmail: " + userEmail);
 
-
-//     mysql.getConnection((error, conn) => {
-//       if (error) {
-//         console.log(error);
-//         res.status(500).send("Internal Server Error");
-//         return;
-//       }
-
-//       conn.query(
-//         "SELECT UserID FROM Users WHERE UserID = ? AND UserEmail = ? AND Password = ?",
-//         [userId, userEmail, inputPassword],
-//         (err, result) => {
-//           console.log(result);
-//           if (err) {
-//             console.log(err);
-//             res.status(500).send("Internal Server Error");
-//             return;
-//           }
-
-//           if (result.length === 0) {
-//             console.log("cannot find user");
-//             res.status(404).send("User not found");
-//             return;
-//           }
-
-//           conn.query("DELETE FROM Users WHERE UserID = ?",
-//             [userId],
-//             (err, result) => {
-//               console.log(result);
-//               if (err) {
-//                 console.log(err);
-//                 res.status(500).send("Internal Server Error");
-//                 return;
-//               }
-//               res.status(200).send("User deleted successfully");
-//             }
-        
-//           )
-
-//           conn.release();
-//         }
-//       );
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
+router.post('/find-email', async (req, res) => {
+    try {
+      const { UserName, UserCellPhone } = req.body;
+        console.log(UserName, UserCellPhone);
+  
+      if (!UserName || !UserCellPhone) {
+        return res.status(400).json({ error: '이름과 전화번호를 모두 입력하세요.' });
+      }
+  
+      // MySQL 연결
+      mysql.getConnection((error, conn) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+  
+        // SQL 쿼리 실행
+        const query = `
+          SELECT 
+              u.UserEmail 
+          FROM 
+              Users u 
+          WHERE 
+              u.UserName = '${UserName}' AND u.UserCellPhone = '${UserCellPhone}';
+        `;
+  
+        conn.query(query, (error, results) => {
+          if (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal Server Error' });
+          } else {
+            if (results.length > 0) {
+              const email = results[0].UserEmail;
+              console.log(email);
+            } else {
+              res.json({ message: '일치하는 사용자가 없습니다.' });
+            }
+          }
+  
+          // MySQL 연결 종료
+          conn.release();
+        });
+      });
+    } catch (error) {
+      console.error('API 오류:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;

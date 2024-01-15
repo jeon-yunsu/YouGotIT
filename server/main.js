@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const path = require('path');
 const app = express();
+const cors = require('cors');
 
 const homeRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
@@ -15,6 +16,7 @@ const paymentRoutes = require('./routes/payment');
 const lectureRoutes = require('./routes/lecture');
 
 // 미들웨어 등록
+app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(session({
@@ -23,9 +25,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// 템플릿 엔진 설정
-app.set('views','./views');
-app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 라우터 등록
