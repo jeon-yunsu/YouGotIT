@@ -1,0 +1,75 @@
+.payment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+
+  .list-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .payment-card img {
+    width: 50px; /* 원하는 가로 크기로 조절 */
+    height: 50px; /* 원하는 세로 크기로 조절 */
+  }
+
+  .payment-table {
+    border: 1px solid #ddd;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .payment-table tr,
+  .payment-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .payment-table tr {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  .payment-table td img {
+    max-width: 100px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .payment-card {
+    margin-top: 20px;
+  }
+
+  .payment-no,
+  .payment-name,
+  .payment-email,
+  .payment-title,
+  .payment-price,
+  .payment-date,
+  .payment-progress {
+    font-size: 14px;
+  }
+
+  .payment-progress {
+    font-weight: bold;
+    color: green;
+  }
+
+  .payment-btn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .payment-btn:hover {
+    background-color: #0056b3;
+  }
+}

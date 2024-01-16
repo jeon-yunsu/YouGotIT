@@ -1,0 +1,89 @@
+.profile {
+  display: flex;
+
+  .profile-list {
+    flex: 1;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 200px;
+
+    li {
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+  }
+
+  .vl {
+    border: 1px solid black;
+    width: 0.1px;
+    height: 10px;
+    margin: 0 20px;
+  }
+
+  .profile-content-container {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+
+      .profile-detail {
+        width: 100%;
+        max-width: 500px; // Adjusted max-width
+      }
+
+      .profile-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+
+      .profile-image-container {
+        width: 100%;
+        text-align: center;
+
+        .profile-image {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
+
+      .profile-name {
+        text-align: center;
+        font-size: 20px;
+        margin: 15px 0;
+      }
+
+      .btn-primary {
+        margin-bottom: 15px;
+      }
+
+      .profile-info {
+        text-align: center;
+
+        .profile-nickname,
+        .profile-email {
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    .profile-introduction {
+      text-align: center;
+    }
+
+    .profile-update{
+      cursor: pointer;
+      text-align: right;
+    }
+
+    // Additional styles for other sections (수강중인 강의 목록, 장바구니, 결제내역) can be added here
+  }
+}

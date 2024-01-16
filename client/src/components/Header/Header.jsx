@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import YouGotITLogo from '../../img/YouGotITLogo2.png';
 import './style.scss';
 
-const Navbar = () => {
+const Header = () => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     const toggleDropdown = () => {
@@ -11,7 +11,7 @@ const Navbar = () => {
     };
 
     return (
-        <div className="navbar">
+        <div className="header">
             <div className="container">
                 <div className='links'>
                     <Link to="/">
@@ -24,7 +24,7 @@ const Navbar = () => {
                 <div className='drop-down'>
                     {/* 드랍다운 토글 버튼 */}
                     <button className="dropdown-toggle" onClick={toggleDropdown}>
-                        {isDropdownOpen ? '강의' : '강의'}
+                        {isDropdownOpen ? '강의목록' : '강의목록'}
                     </button>
 
                     {/* 드랍다운 컨텐츠 */}
@@ -37,7 +37,7 @@ const Navbar = () => {
                     )}
                 </div>
                 <div class="search">
-                    <input type="text" placeholder="검색어 입력"/>
+                    <input type="text" placeholder="배우고 싶은 지식을 검색하세요."/>
                 </div>
                 <div className="links">
                     <Link className="link" to="/signIn">
@@ -52,4 +52,4 @@ const Navbar = () => {
     );
 }
 
-export default Navbar;
+export default Header;

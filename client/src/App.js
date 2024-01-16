@@ -6,26 +6,27 @@ import {
   Outlet,
 } from 'react-router-dom';
 
-import SignUp from "./pages/auth/signUp/SignUp";
-import SignIn from "./pages/auth/signIn/SignIn";
+import SignUp from "./pages/auth/signUp/SignUp"
+import SignIn from "./pages/auth/signIn/SignIn"
 import Write from "./pages/Write"
-import Home from "./pages/Home"
+import Home from "./pages/home/Home"
 import Single from "./pages/Single"
-import Search from "./pages/Search"
+import Search from "./pages/search/Search"
 import Courses from "./pages/Courses"
 import OnlineStudy from "./pages/OnlineStudy"
-import Profile from "./pages/Profile"
+import Profile from "./pages/mypage/Mypage"
 import MyOnline from "./pages/MyOnline"
-import Cart from "./pages/Cart"
-import Payment from "./pages/Payment"
+import Cart from "./pages/mypage/cart/Cart";
+import Payment from "./pages/mypage/payment/Payment"
+import Mypage from "./pages/mypage/Mypage";
 
-import Navbar from "../src/components/Header/Navbar"
+import Header from "../src/components/Header/Header"
 import Footer from "../src/components/Footer/Footer"
 
 const Layout = () => {
   return (
     <>
-      <Navbar />
+      <Header />
       <Outlet />
       <Footer />
     </>
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/courses",
         element: <Courses />
+      },
+      {
+        path: "/mypage",
+        element: <Mypage />
       },
       {
         path: "/profile",

@@ -1,0 +1,212 @@
+$lightGreen : #b9e7e7;
+$default-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+body {
+  font-family: $default-font;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+
+  .container {
+    width: 1024px;
+
+    .link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    // HOME
+
+    .home {
+    //   .card-container {
+    //     display: grid;
+    //     grid-template-columns: repeat(4, minmax(200px, 1fr));
+    //     gap: 20px;
+    //     padding: 0px;
+    //   }
+
+      .banner-image {
+        width: 100%;
+        margin-bottom: 50px;
+      }
+
+      .popular-courses {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 0px;
+        margin-bottom: 100px;
+      }
+      .new-courses {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 0px;
+      }
+
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: box-shadow 0.3s ease;
+        cursor: pointer;
+
+        .star-ratings {
+            color: #aaa9a9; 
+            position: relative;
+            unicode-bidi: bidi-override;
+            width: max-content;
+            -webkit-text-fill-color: transparent; /* Will override color (regardless of order) */
+            -webkit-text-stroke-width: 1.3px;
+            -webkit-text-stroke-color: #2b2a29;
+          }
+           
+          .star-ratings-fill {
+            color: #fff58c;
+            padding: 0;
+            position: absolute;
+            z-index: 1;
+            display: flex;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            -webkit-text-fill-color: gold;
+          }
+           
+          .star-ratings-base {
+            z-index: 0;
+            padding: 0;
+          }
+
+        &:hover {
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+
+        .card-content {
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .card-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            height: 48px; /* 강제로 2줄로 설정하는 높이. 조절 가능 */
+          }
+
+          .card-instructor, .card-price {
+            margin-top: 4px; /* 조절 가능한 여백 */
+          }
+
+          .card-description {
+            font-size: 14px;
+            margin-bottom: 16px;
+            color: #666;
+          }
+
+          .card-button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+              background-color: darken(#007bff, 10%);
+            }
+          }
+        }
+      }
+
+      .posts {
+        margin-top: 50px;
+        display: flex;
+        flex-direction: column;
+        gap: 150px;
+
+        .post {
+          display: flex;
+          gap: 100px;
+
+          &:nth-child(2n+1) {
+            flex-direction: row-reverse;
+          }
+
+          .img {
+            flex: 2;
+            position: relative;
+
+            &::after {
+              content: "";
+              width: 100%;
+              height: 100%;
+              background-color: $lightGreen;
+              position: absolute;
+              top: 20px;
+              left: -20px;
+              z-index: -1;
+            }
+
+            img {
+              width: 100%;
+              max-height: 400px;
+              object-fit: cover;
+            }
+          }
+
+          .content {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            h1 {
+              font-size: 30px;
+            }
+
+            p {
+              font-size: 30px;
+            }
+
+            button {
+              width: max-content;
+              padding: 10px 20px;
+              border: none;
+              cursor: pointer;
+              background-color: white;
+              border: 1px solid teal;
+              color: teal;
+
+              &:hover {
+                border: 1px solid white;
+                background-color: $lightGreen;
+                color: black;
+              }
+            }
+
+          }
+
+        }
+
+      }
+    }
+  }
+}

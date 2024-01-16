@@ -1,11 +1,10 @@
 
-.navbar {
+.header {
   .container {
     padding: 10px 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 0px;
 
     .logo {
       img {
@@ -59,7 +58,7 @@
     .search {
       display: flex;
       align-items: center;
-      width: 300px;
+      width: 450px;
     }
 
     .search input {
