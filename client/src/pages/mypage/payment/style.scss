@@ -2,34 +2,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  gap: 20px;
+  padding: 10px;
+  gap: 10px;
 
   .list-title {
     font-size: 24px;
     margin-bottom: 15px;
   }
 
-  .payment-card img {
-    width: 50px; /* 원하는 가로 크기로 조절 */
-    height: 50px; /* 원하는 세로 크기로 조절 */
-  }
-
-  .payment-table {
-    border: 1px solid #ddd;
-    width: 100%;
-    border-collapse: collapse;
+  .payment-card {
     margin-top: 20px;
   }
 
-  .payment-table tr,
+  .payment-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .payment-table th,
   .payment-table td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: center;
   }
 
-  .payment-table tr {
+  .payment-table th {
     background-color: #f2f2f2;
     font-weight: bold;
   }
@@ -41,8 +38,29 @@
     margin: 0 auto;
   }
 
-  .payment-card {
-    margin-top: 20px;
+  .payment-container-no{
+    width: 9%;
+  }
+  .payment-container-name{
+    width: 11%;
+  }
+  .payment-container-email{
+    width: 20%;
+  }
+  .payment-container-title{
+    width: 20%;
+  }
+  .payment-container-price{
+    width: 12%;
+  }
+  .payment-container-date{
+    width: 10%;
+  }
+  .payment-container-progress{
+    width: 11%;
+  }
+  .payment-container-cancel{
+    width: 10%;
   }
 
   .payment-no,
@@ -55,13 +73,15 @@
     font-size: 14px;
   }
 
+  
+
   .payment-progress {
     font-weight: bold;
     color: green;
   }
 
   .payment-btn {
-    padding: 8px 16px;
+    padding: 4px 8px;
     background-color: #007bff;
     color: #fff;
     border: none;

@@ -26,6 +26,15 @@ body {
       height: 100vh;
       background-color: white;
 
+      p{
+        font-size: 14px;
+        text-align: center;
+      }
+
+      Link{
+        list-style-type: none;
+      }
+
       form {
         display: flex;
         flex-direction: column;
@@ -105,7 +114,7 @@ body {
 
         p {
           font-size: 12px;
-          height: 5px;
+
         }
 
         span {
@@ -119,9 +128,8 @@ body {
         text-align: center;
         height: 100px;
         
-        h3{
-          margin: 0px;
-          padding: 0px;
+        .social-signUp{
+          font-size: 14px;
         }
 
         img{

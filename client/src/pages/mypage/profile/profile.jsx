@@ -11,8 +11,8 @@ const Profile = ({ profileInfo }) => {
 
   return (
     <div className='profile-info'>
+      <h2 className='profile-title'>프로필</h2>
       <div className='profile-detail'>
-        <h2 className='profile-title'>프로필</h2>
         <div className='profile-image-container'>
           <img className='profile-image img-fluid rounded-circle' src={profileInfo.imageSrc} alt="" />
         </div>

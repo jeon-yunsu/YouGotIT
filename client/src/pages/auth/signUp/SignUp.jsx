@@ -25,7 +25,7 @@ const SignUp = () => {
         </div>
         <button>회원가입</button>
         <div>
-            <h4>개인정보동의</h4>
+            <p>개인정보동의</p>
             <div className="join-form">
                 <div>
                     개인정보보호법에 따라 You Got IT에 회원가입 신청하시는 분께 수집하는 개인정보의 항목, 개인정보의 수집 및 이용목적, 개인정보의 보유 및 이용기간, 동의 거부권 및 동의 거부 시 불이익에 관한 사항을 안내 드리오니 자세히 읽은 후 동의하여 주시기 바랍니다.
@@ -75,7 +75,7 @@ const SignUp = () => {
           Don't you have an account? <Link to="/SignIn">로그인</Link>
         </span>
         <div className="simple-signUp">
-          <h3>소셜 회원가입</h3>
+          <p className="social-signUp">소셜 회원가입</p>
           <img src={KakaoLogin} alt="카카오 로그인" />
         </div>
       </form>

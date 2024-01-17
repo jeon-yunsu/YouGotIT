@@ -51,7 +51,7 @@ body {
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: box-shadow 0.3s ease;
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
         cursor: pointer;
 
         .star-ratings {
@@ -83,6 +83,7 @@ body {
 
         &:hover {
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+          transform: translateY(-5px);
         }
 
         .card-image {
@@ -107,7 +108,7 @@ body {
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 200px;
-            height: 48px; /* 강제로 2줄로 설정하는 높이. 조절 가능 */
+            height: 46px; /* 강제로 2줄로 설정하는 높이. 조절 가능 */
           }
 
           .card-instructor, .card-price {

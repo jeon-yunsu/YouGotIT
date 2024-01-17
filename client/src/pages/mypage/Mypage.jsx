@@ -9,7 +9,7 @@ import Cart from './cart/Cart';
 import Payment from './payment/Payment';
 
 const Mypage = () => {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState('프로필');
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
@@ -47,7 +47,7 @@ const Mypage = () => {
 
   return (
     <div className='profile container'>
-      <ul className='profile-list list-group'>
+      <ul className='profile-list'>
         <li onClick={() => handleItemClick('프로필')} className={`list-group-item ${selectedItem === '프로필' && 'active'}`}>
           프로필
         </li>

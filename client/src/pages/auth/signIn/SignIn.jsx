@@ -108,7 +108,7 @@ const SignIn = () => {
         </div>
         <p>This is an error!</p>
         <div className="simple-signIn">
-          <h3>소셜 로그인</h3>
+            <p className="social-login">소셜 로그인</p>
           <img src={KakaoLogin} alt="" />
         </div>
 
