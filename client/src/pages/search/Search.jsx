@@ -29,7 +29,7 @@ const Search = () => {
   return (
     <div className='search'>
       <img className='banner-image' src={Banner} alt="banner" />
-      <h3>검색 결과</h3>
+      <h3 className='search-word'>Node Js 검색 결과</h3>
       <div className='card-container'>
 
       <div className="card">

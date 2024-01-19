@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import YouGotITLogo from '../../img/YouGotITLogo2.png';
 import './style.scss';
+import SignIn from '../../pages/auth/signIn/SignIn';
 
 const Header = () => {
+    const navigate = useNavigate();
     const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [isModalOpen, setModalOpen] = useState(false);
+
 
     const toggleDropdown = () => {
         setDropdownOpen(!isDropdownOpen);
     };
+    
+    const openModal = () => {
+        setModalOpen(true);
+    };
 
+    const closeModal = () => {
+        setModalOpen(false);
+    };
     return (
         <div className="header">
             <div className="container">
@@ -36,18 +47,28 @@ const Header = () => {
                         </div>
                     )}
                 </div>
-                <div class="search">
-                    <input type="text" placeholder="배우고 싶은 지식을 검색하세요."/>
-                </div>
+                <form action="" className='search'>
+                    <input type="text" placeholder="검색어 입력"/>
+                    <button type='submit'>
+                        <img src="https://cdn-icons-png.flaticon.com/512/71/71403.png" alt="" />
+                    </button>
+                </form>
+                
+                
                 <div className="links">
-                    <Link className="link" to="/signIn">
+                    <button className="link" onClick={openModal}>
                         <h6>로그인</h6>
-                    </Link>
-                    <Link className="link" to="/signUp">
+                    </button>
+                    <button className="link" onClick={()=>{
+                        navigate("/signUp");
+                    }}>
                         <h6>회원가입</h6>
-                    </Link>
+                    </button>
                 </div>
             </div>
+            <hr />
+            {isModalOpen && <div className="modal-overlay" onClick={closeModal} />}
+            {isModalOpen && <SignIn closeModal={closeModal} />}
         </div>
     );
 }

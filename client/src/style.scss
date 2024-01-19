@@ -3,36 +3,22 @@ $default-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
 body {
   font-family: $default-font;
+  // background-image: url(https://i.pinimg.com/736x/cb/6a/90/cb6a90d725d01e1c2774b3a0ff42e7df.jpg);
+  
+
 }
 
 .app {
   display: flex;
   justify-content: center;
+  background-color:#E3EBF0;
 
   .container {
     width: 100%;
 
     .link {
       text-decoration: none;
-      color: inherit;
+      color: #212529;
     }
-
-    
-
-    // SINGLE
-    .single {
-      display: flex;
-      gap: 50px;
-
-      .content {
-        flex: 5;
-      }
-
-      .menu {
-        flex: 2
-      }
-    }
-
-
   }
 }

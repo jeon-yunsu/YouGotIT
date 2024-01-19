@@ -31,7 +31,11 @@ const Home = () => {
     <div className="home">
       <img className='banner-image' src={Banner} alt="banner" />
       <div className="card-container">
-        <h3>인기강의</h3>
+        <div className='list-title-container'> 
+          <h3 className='list-title'>강력 추천하는 베스트 강의 ⎝㋡⎠</h3>
+          <span className='popular'>Popular!!</span>
+        </div>
+        
         <div className="popular-courses">
           <div className="card">
             <img className="card-image" src="https://cdn.inflearn.com/public/courses/329963/cover/26550c58-624a-41c8-86dc-fea75b6c3b22/thumbnail-frontnew.png" alt="Course" />
@@ -74,7 +78,11 @@ const Home = () => {
           </div>
         </div>
 
-        <h3>신규강의</h3>
+        <div className='list-title-container'>
+          <h3 className='list-title'>따끈따끈, 신규 강의를 만나보세요 ꒰⍢꒱ ༘*</h3>
+          <span className='new'>New!!</span>
+        </div>
+        
         <div className="new-courses">
           <div className="card">
             <img className="card-image" src="https://cdn.inflearn.com/public/courses/326368/cover/7b26110e-1eab-4ab6-8d9c-82381a5afd3d/KakaoTalk_Photo_2021-05-26-22-29-45.jpeg" alt="Course" />
