@@ -11,7 +11,7 @@ const MyCourse = ({ mycourses }) => {
 
   return (
     <div className='my-course'>
-      <h3 className='list-title'>수강중인 강의</h3>
+      <div className='list-title'>수강중인 강의</div>
       {mycourses.map((course, index) => (
         <div key={index} className='my-course-card'>
           <img className='my-course-image' src={course.imageSrc} alt="" />

@@ -1,25 +1,28 @@
 
 .header {
-  width: 100%;
+  width: 90%;
   height: 100px;
   margin-bottom: 50px;
 
   hr{
-    margin: 0px;
+    width: 111%;
   }
 
   .container {
-    padding: 5px 0px;
+    // padding: 5px 0px;
     display: flex;
     align-items: center;
+    padding: 0;
     justify-content: space-between;
+    // background-color:#cee0eb;
+    width: 111%;
 
     .logo {
       img {
         width: 200px;
       }
       cursor: pointer;
-      margin-left: 10px;
+      // margin-left: 10px;
     }
 
     .drop-down {
@@ -126,7 +129,7 @@
       button{
         font-size: 16px;
         font-weight: 300;
-        background-color: #E3EBF0;
+        background-color: white;
         border: none;
 
       }

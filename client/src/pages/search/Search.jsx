@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Banner from '../../img/banner.png';
 import './style.scss';
+import { useParams } from 'react-router-dom';
 
 
 const StarRatings = ({ rating }) => {
@@ -26,10 +27,13 @@ const StarRatings = ({ rating }) => {
   };
 
 const Search = () => {
+
+  const { searchWord } = useParams();
+
   return (
     <div className='search'>
       <img className='banner-image' src={Banner} alt="banner" />
-      <h3 className='search-word'>Node Js 검색 결과</h3>
+      <h3 className='search-word'>{searchWord} 검색 결과</h3>
       <div className='card-container'>
 
       <div className="card">

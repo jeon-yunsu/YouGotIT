@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./style.scss"; // Import the custom style file
+import Logo from '../../../img/YouGotITLogo2.png';
 
 const SignIn = ({ closeModal }) => {
   const handleSignIn = () => {
@@ -12,9 +13,9 @@ const SignIn = ({ closeModal }) => {
 
   return (
     <div className="auth-signin">
-      <div className="signin-title">
-        <span>Sign In</span>
-        
+      <button className="exit" onClick={closeModal}>X</button>
+      <div className="signin-logo">
+        <img src={Logo} alt="" />
       </div>
       <form onSubmit={handleSignIn}>
         <div className="signin-input-container">
@@ -27,9 +28,6 @@ const SignIn = ({ closeModal }) => {
         </div>
       </form>
 
-      <span>
-        <Link className="signup-link" to="/SignUp"> Don't have an account? Click here! </Link>
-      </span>
     </div>
   );
 };

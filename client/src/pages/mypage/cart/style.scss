@@ -56,7 +56,7 @@ img {
 // CART HEADER
 .heading {
   padding: 1em 0;
-  border-bottom: 1px solid #d0d0d0;
+  // border-bottom: 1px solid #d0d0d0;
 
   .cart-title {
     font-size: 24px;
@@ -228,6 +228,8 @@ a.remove {
   border-radius: 100%;
   line-height: 0.85;
   @include transition(all, 0.25s, linear);
+  margin-bottom: 19px;
+  margin-left: 10px;
   &:hover {
     background: #f30;
   }

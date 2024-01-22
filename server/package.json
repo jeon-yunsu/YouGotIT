@@ -23,6 +23,7 @@
     "express-generator": "^4.16.1",
     "express-session": "^1.17.3",
     "html": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.2.3",
     "mysql": "^2.18.1",
     "path": "^0.12.7",

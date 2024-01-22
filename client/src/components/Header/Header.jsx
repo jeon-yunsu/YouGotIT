@@ -43,6 +43,11 @@ const Header = () => {
                         <div className="dropdown-content">
                         <Link to="/page1">Page 1</Link>
                         <Link to="/page2">Page 2</Link>
+                        <Link to="/page2">Page 3</Link>
+                        <Link to="/page2">Page 4</Link>
+                        <Link to="/page2">Page 5</Link>
+                        <Link to="/page2">Page 6</Link>
+                        <Link to="/page2">Page 7</Link>
                         
                         </div>
                     )}
@@ -53,7 +58,6 @@ const Header = () => {
                         <img src="https://cdn-icons-png.flaticon.com/512/71/71403.png" alt="" />
                     </button>
                 </form>
-                
                 
                 <div className="links">
                     <button className="link" onClick={openModal}>

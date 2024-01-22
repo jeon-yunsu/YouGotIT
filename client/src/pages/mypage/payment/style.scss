@@ -19,53 +19,57 @@
     border-collapse: collapse;
     border-radius: 10px;
   }
-
+  
   .payment-table th,
   .payment-table td {
-    border: 1px solid gray;
     padding: 12px;
     text-align: center;
   }
-
+  
   .payment-table th {
     background-color: #f2f2f2;
     font-weight: bold;
   }
-
+  
   .payment-table td img {
     max-width: 100px;
     height: auto;
     display: block;
     margin: 0 auto;
   }
-
-  .payment-container-no{
+  
+  .payment-container-no {
     min-width: 53px;
   }
-  .payment-container-name{
+  
+  .payment-container-name {
     min-width: 62px;
   }
-  .payment-container-email{
+  
+  .payment-container-email {
     min-width: 150px;
   }
-  .payment-container-title{
+  
+  .payment-container-title {
     min-width: 246px;
   }
-  .payment-container-price{
+  
+  .payment-container-price {
     min-width: 81px;
   }
-  .payment-container-date{
+  
+  .payment-container-date {
     min-width: 97px;
   }
-  .payment-container-progress{
+  
+  .payment-container-progress {
     min-width: 67px;
   }
-  .payment-container-cancel{
+  
+  .payment-container-cancel {
     min-width: 0px;
-
-    
   }
-
+  
   .payment-no,
   .payment-name,
   .payment-email,
@@ -74,16 +78,13 @@
   .payment-date,
   .payment-progress {
     font-size: 14px;
-    // width: auto;
   }
-
   
-
   .payment-progress {
     font-weight: bold;
     color: green;
   }
-
+  
   .btn-primary {
     padding: 4px 8px;
     background-color: #6096B4;
@@ -96,8 +97,8 @@
     font-weight: 500;
     height: 30px;
   }
-
+  
   .btn-primary:hover {
     background-color: #0056b3;
   }
-}
+}  

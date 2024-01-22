@@ -1,261 +1,458 @@
-.lecture{
+$orange: #C0392B;
+$blue: #2980B9;
+$gray: #EEE;
+
+@mixin ul-nostyle {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+@mixin double-shadow($color) {
+  -moz-box-shadow: 0 1px 0 lighten($color, 10%) inset, 0 -1px 0 darken($color, 10%) inset;
+  -webkit-box-shadow: 0 1px 0 lighten($color, 10%) inset, 0 -1px 0 darken($color, 10%) inset;
+  box-shadow: 0 1px 0 lighten($color, 10%) inset, 0 -1px 0 darken($color, 10%) inset;
+}
+
+@mixin hover-style($color) {
+  &:hover {
+    background: lighten($color, 3%);
+  }
+}
+
+@mixin animation($content) {
+  animation: $content;
+  -moz-animation: $content;
+  -webkit-animation: $content;
+}
+
+@mixin keyframes($name) {
+  @keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+}
+
+@mixin box-shadow($shadows...) {
+  -moz-box-shadow: $shadows;
+  -webkit-box-shadow: $shadows;
+  box-shadow: $shadows;
+}
+
+.container {
+  width: 350px;
+
+  & > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    width: 90%;
+  }
+}
+
+.lecture {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+
+  .lecture-container {
     display: flex;
-    flex-direction: column;
-    .lecture-container {
-        display: flex;
-        width: 100%;
-        height: 400px;
-        padding: 10px;
-        margin: 10px;
-        background-color: #002333;
-        border-radius: 10px 10px 10px 10px;
+    width: 100%;
+    height: 400px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #002333;
+    border-radius: 10px 10px 10px 10px;
 
-        .lecture-rating-details{
-            display: flex;
-            flex-direction: row;
+    .lecture-rating-details {
+      display: flex;
+      flex-direction: row;
 
-            .lecture-rating-count{
-                color: white;
-            }
-        }
-
-        .star-ratings {
-            color: #aaa9a9; 
-            position: relative;
-            unicode-bidi: bidi-override;
-            width: max-content;
-            -webkit-text-fill-color: transparent; /* Will override color (regardless of order) */
-            -webkit-text-stroke-width: 1.3px;
-            -webkit-text-stroke-color: #2b2a29;
-          }
-           
-          .star-ratings-fill {
-            color: #fff58c;
-            padding: 0;
-            position: absolute;
-            z-index: 1;
-            display: flex;
-            top: 0;
-            left: 0;
-            overflow: hidden;
-            -webkit-text-fill-color: gold;
-          }
-           
-          .star-ratings-base {
-            z-index: 0;
-            padding: 0;
-            
-          }
-        
-            &:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-            }
-    
-        .lecture-imformation {
-            display: flex;
-            align-items: center;  // 이미지를 수직으로 가운데 정렬
-    
-            width: 100%;
-        }
-    
-        .lecture-image {
-            width: 450px;
-            height: 300px;
-            margin-left: 25px;
-            margin-right: 25px;
-            border-radius: 8px;  // 이미지에 라운드된 모서리 추가
-        }
-    
-        .lecture-imformation-details {
-            display: flex;
-            flex-direction: column;
-            margin-left: 20px;  // 내용을 좌측으로 정렬하고 여백 추가
-        }
-    
-        .lecture-time{
-            font-weight: 400;
-            line-height: 1.43;
-            letter-spacing: -.3px;
-            font-size: 14px;
-            color: #fff;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-    
-        .lecture-price{
-            font-weight: 400;
-            line-height: 1.43;
-            letter-spacing: -.3px;
-            font-size: 14px;
-            color: #fff;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
-    
-        .lecture-instructor{
-            font-weight: 400;
-            line-height: 1.43;
-            letter-spacing: -.3px;
-            font-size: 14px;
-            margin-right: 8px;
-            color: #fff;
-            text-decoration: underline;
-            margin-bottom: 10px;
-        }
-    
-        .lecture-rating{
-            margin-right: 8px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-    
-        .lecture-category{
-            font-weight: 400;
-            line-height: 1.43;
-            letter-spacing: -.3px;
-            font-size: 14px;
-            color: #fff;
-            font-weight: 500;
-            white-space: pre;
-            margin-bottom: 20px;
-        }
-    
-        .lecture-title{
-            margin-bottom: 10px;
-            line-height: 1.5;
-            letter-spacing: -.3px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 26px;
-            word-break: break-word;
-        }
-    
-        .lecture-button {
-            display: flex;
-            gap: 10px;  // 버튼 사이에 간격 추가
-        }
-    
-        .lecture-paid,
-        .lecture-add-cart {
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    
-        .lecture-paid:hover,
-        .lecture-add-cart:hover {
-            background-color: #0056b3;
-        }
-    }
-
-    .lecture-card{
-        .lecture-card-button{
-            display: flex;
-            flex-direction: row;
-        }
-        .lecture-card-introduction,
-        .lecture-card-instructor,
-        .lecture-card-curriculum,
-        .lecture-card-comment{
-            // margin-left: 10px;
-            margin: 2px 2px 2px 2px;
-            padding: 5px;
-            background-color: white;
-            color: gray;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s; // 부드러운 색상 변화를 위한 트랜지션 추가
-
-            &:hover {
-                color: black;
-                background-color: #f0f0f0; // 마우스를 올렸을 때 배경색 변경
-            }
-        } 
-    }
-
-    .lecture-hr{
-        margin-top: 10px;
-        width: 100%;
-        color: #313131;
-    }
-    
-    .lecture-details-curriculum-content {
-        border-left: 1px solid black;
-        border-right: 1px solid black;
-        
-        .curriculum-item {
-          display: flex;
-          flex-direction: column;
-        //   border: 1px solid black;
-      
-          .curriculum-title {
-            padding: 8px;
-            cursor: pointer;
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-            background-color: #f0f0f0; /* 선택한 섹션의 배경색 설정 (옵션) */
-          }
-      
-          .sub-items {
-            display: flex;
-            flex-direction: column;
-            background-color: #f5f5f5; /* 서브 아이템 배경색 설정 (옵션) */
-
-            a{
-                text-decoration: none;
-                color: black;
-            }
-
-            a:link{text-decoration: none;}
-            a:visited, a:active{color: black;}
-          }
-        }
+      .lecture-rating-count {
+        color: white;
       }
-      
-    
-    .lecture-details-comment-content{
+    }
+
+    .star-ratings {
+      color: #aaa9a9;
+      position: relative;
+      unicode-bidi: bidi-override;
+      width: max-content;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke-width: 1.3px;
+      -webkit-text-stroke-color: #2b2a29;
+    }
+
+    .star-ratings-fill {
+      color: #fff58c;
+      padding: 0;
+      position: absolute;
+      z-index: 1;
+      display: flex;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      -webkit-text-fill-color: gold;
+    }
+
+    .star-ratings-base {
+      z-index: 0;
+      padding: 0;
+    }
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .lecture-imformation {
+      display: flex;
+      align-items: center;
+
+      width: 100%;
+    }
+
+    .lecture-image {
+      width: 450px;
+      height: 300px;
+      margin-left: 25px;
+      margin-right: 25px;
+      border-radius: 8px;
+    }
+
+    .lecture-imformation-details {
+      display: flex;
+      flex-direction: column;
+      margin-left: 20px;
+    }
+
+    .lecture-time {
+      font-weight: 400;
+      line-height: 1.43;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .lecture-price {
+      font-weight: 400;
+      line-height: 1.43;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .lecture-instructor {
+      font-weight: 400;
+      line-height: 1.43;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      margin-right: 8px;
+      color: #fff;
+      text-decoration: underline;
+      margin-bottom: 10px;
+    }
+
+    .lecture-rating {
+      margin-right: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .lecture-category {
+      font-weight: 400;
+      line-height: 1.43;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+      white-space: pre;
+      margin-bottom: 20px;
+    }
+
+    .lecture-title {
+      margin-bottom: 10px;
+      line-height: 1.5;
+      letter-spacing: -.3px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 26px;
+      word-break: break-word;
+    }
+
+    .lecture-button {
+      display: flex;
+      gap: 10px;
+    }
+
+    .lecture-paid,
+    .lecture-add-cart {
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .lecture-paid:hover,
+    .lecture-add-cart:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  .lecture-card {
+    .lecture-card-button {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .lecture-card-introduction,
+    .lecture-card-instructor,
+    .lecture-card-curriculum,
+    .lecture-card-comment {
+      margin: 2px 2px 2px 2px;
+      padding: 5px;
+      background-color: white;
+      color: gray;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        color: black;
+        background-color: #f0f0f0;
+      }
+    }
+  }
+
+  .lecture-hr {
+    margin-top: 10px;
+    width: 100%;
+    color: #313131;
+  }
+
+  .lecture-details-introcuction {
+    text-align: center;
+  }
+
+  .lecture-details-instructor {
+    text-align: center;
+  }
+
+  .curriculum-container {
+    align-items: center;
+    text-align: center;
+
+    ul {
+      list-style: none;
+      text-align: center;
+      align-items: center;
+      margin-right: 28px;
+    }
+  }
+
+  .lecture-details-curriculum-content {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    margin-bottom: 20px;
+
+    .curriculum-item {
+      display: flex;
+      flex-direction: column;
+
+      .curriculum-title {
+        padding: 8px;
+        cursor: pointer;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        background-color: #f0f0f0;
+
+      }
+
+      .sub-items {
         display: flex;
         flex-direction: column;
+        background-color: #f5f5f5;
 
-        .comment-userInfo{
-            display: flex;
-            flex-direction: row;
-
-            .comment-userImage{
-                width: 50px;
-                height: 50px;
-                border-radius: 50px;
-                margin-right: 20px;
-                margin-bottom: 20px;
-            }
-
-            .comment-userInfo-content{
-                font-size: 14px;
-                text-align: left;
-            }
+        a {
+          text-decoration: none;
+          color: black;
         }
-        
+
+        a:link {
+          text-decoration: none;
+        }
+
+        a:visited,
+        a:active {
+          color: black;
+        }
+      }
+    }
+  }
+
+  .lecture-details-comment-content {
+    display: flex;
+    flex-direction: column;
+
+    .comment-userInfo {
+      display: flex;
+      flex-direction: row;
+
+      .comment-userImage {
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+      }
+      .comment-userNickname{
+        width: 150px;
+      }
+
+      .comment-userInfo-content {
+        font-size: 14px;
+        text-align: left;
+        margin-bottom: 40px;
+      }
+    }
+  }
+
+  .lecture-details-title {
+    line-height: 1.45;
+    letter-spacing: -.3px;
+    color: #343a40;
+    font-size: 22px;
+    font-weight: 700;
+    font-style: inherit;
+  }
+}
+
+.title {
+  margin-right: 8px;
+  line-height: 1.45;
+  letter-spacing: -0.3px;
+  color: #343a40;
+  font-size: 22px;
+  font-weight: 700;
+  font-style: inherit;
+}
+
+.dropdown {
+  position: relative; // absolute에서 relative로 변경
+
+  a {
+    text-decoration: none;
+  }
+
+  [data-toggle="dropdown"] {
+    display: block;
+    color: black;
+    background: #f5f5f5;
+    padding: 10px;
+    border-top: 0.1px ;
+
+  }
+
+  & > .dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    @include ul-nostyle;
+    transform: scaleY(0);
+    transition: max-height 0.6s ease-out;
+    animation: hideAnimation 0.4s ease-out;
+    position: relative; // 변경
+    width: 100%;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+
+    li {
+      padding: 0;
+
+      a {
+        display: block;
+        color: darken($gray, 50%);
+        background: $gray;
+        text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.3);
+        padding: 10px 10px;
+      }
+    }
+  }
+
+  & > input[type="checkbox"] {
+    opacity: 0;
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+
+    &:checked ~ .dropdown-menu {
+      max-height: 9999px;
+      display: block;
+      transform: scaleY(1);
+      animation: showAnimation 0.5s ease-in-out;
+      transition: max-height 2s ease-in-out;
     }
 
-    .lecture-details-title{
-        margin-right: 8px;
-        line-height: 1.45;
-        letter-spacing: -.3px;
-        color: #343a40;
-        font-size: 22px;
-        font-weight: 700;
-        font-style: inherit;
+    &:checked + a[data-toggle="dropdown"] {
+      &:before {
+        transform: translateY(-50%) rotate(-180deg); // 변경
+        transition: transform 0.6s;
+      }
     }
-      
-    
-    
+  }
 }
 
 
 
+@keyframes showAnimation {
+  0% {
+    transform: scaleY(0.1);
+  }
+  40% {
+    transform: scaleY(1.04);
+  }
+  60% {
+    transform: scaleY(0.98);
+  }
+  80% {
+    transform: scaleY(1.04);
+  }
+  100% {
+    transform: scaleY(0.98);
+  }
+  80% {
+    transform: scaleY(1.02);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
 
-
+@keyframes hideAnimation {
+  0% {
+    transform: scaleY(1);
+  }
+  60% {
+    transform: scaleY(0.98);
+  }
+  80% {
+    transform: scaleY(1.02);
+  }
+  100% {
+    transform: scaleY(0);
+  }
+}

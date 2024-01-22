@@ -1,3 +1,9 @@
+
+.list-title{
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
 .my-course-card{
         display: flex;
         flex-direction: row;
@@ -5,10 +11,7 @@
         padding: 20px;
         gap: 20px;
 
-    .list-title{
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
+    
 
     .my-course-image{
         width: 150px;
@@ -25,34 +28,34 @@
       -webkit-box-orient: vertical;
     }
 
-    .progress-bar-container {
-        width: 30%;
-        min-width: 30%;
-        height: 21px;
-        background-color: #e0e0e0;
-        border-radius: 8px;
-        margin-top: 10px;
-        overflow: hidden;
-        display: flex; /* 중앙 정렬을 위해 추가 */
-        align-items: center; /* 중앙 정렬을 위해 추가 */
+    .my-course-progress {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      background-color: #6096B4;
+      border-radius: 8px;
+      text-align: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      transition: width 0.3s ease-in-out;
+      line-height: 21px;
+      width: 0; /* 초기 너비를 0으로 설정합니다. */
+    }
     
-        .my-course-progress {
-          display: flex; /* 중앙 정렬을 위해 추가 */
-          align-items: center; /* 중앙 정렬을 위해 추가 */
-          height: 100%;
-          background-color: #6096B4;
-          border-radius: 8px;
-          text-align: center;
-          justify-content: center;
-          color: #fff;
-          font-weight: bold;
-          transition: width 0.3s ease-in-out;
-          line-height: 21px; /* 수직 중앙 정렬을 위해 height 값과 동일하게 설정 */
-          width: 100%; /* 수평 중앙 정렬을 위해 추가 */
-        }
-      }
+    .progress-bar-container {
+      width: 30%;
+      min-width: 30%;
+      height: 21px;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
 
-      .my-course-continue {
+    .my-course-continue {
         background-color: #6096B4;
         color: #fff;
         padding: 8px 16px;

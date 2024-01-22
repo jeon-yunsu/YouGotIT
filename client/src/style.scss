@@ -11,10 +11,12 @@ body {
 .app {
   display: flex;
   justify-content: center;
-  background-color:#E3EBF0;
+  // background-color:#E3EBF0;
 
   .container {
     width: 100%;
+    padding: 0;
+    // background-color:#E3EBF0;
 
     .link {
       text-decoration: none;

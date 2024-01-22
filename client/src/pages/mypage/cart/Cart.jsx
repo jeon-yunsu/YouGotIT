@@ -18,7 +18,7 @@ const Cart = ({ cart }) => {
   return (
     <div className="wrap cf">
       <div className="heading cf">
-        <h1 className="cart-title">장바구니</h1>
+        <div className="cart-title">장바구니</div>
       </div>
       <div className="cart">
         <ul className="cartWrap">

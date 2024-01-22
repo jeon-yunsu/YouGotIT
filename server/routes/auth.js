@@ -3,6 +3,7 @@ const mysql = require("../database/mysql");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 router.use(bodyParser.json());
 
 router.get("/signIn", (req, res) => {
@@ -98,7 +99,7 @@ router.post("/signIn", async (req, res) => {
       }
 
       conn.query(
-        "SELECT u.UserEmail, u.Password FROM Users u WHERE u.UserEmail = ?",
+        "SELECT u.UserID, u.UserEmail, u.Password FROM Users u WHERE u.UserEmail = ?",
         [email],
         (err, result) => {
           console.log(result);
@@ -118,11 +119,14 @@ router.post("/signIn", async (req, res) => {
 
           if (bcrypt.compareSync(password, hashedPassword)) {
             console.log("success");
-            req.session.email = email;
 
-            if (req.session.email) {
-              res.redirect("/");
-            }
+            const token = jwt.sign({ 
+              userID: result[0].UserID
+            }, "secret-key", { expiresIn: "1h" });
+            res.json({ token });
+            
+            console.log("token: "+token);
+
           } else {
             console.log("fail");
             res.status(401).send("Invalid password");

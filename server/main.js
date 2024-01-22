@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 const cors = require('cors');
 
-const homeRoutes = require('./routes/index');
+const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
 const categoriesRoutes = require('./routes/categories');
 const searchRoutes = require('./routes/search');
