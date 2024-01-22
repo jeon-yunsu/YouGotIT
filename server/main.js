@@ -1,10 +1,12 @@
 // 모듈
 const express = require('express'); 
 const bodyParser = require('body-parser'); 
-const session = require('express-session');
 const path = require('path');
 const app = express();
 const cors = require('cors');
+require('dotenv').config();
+const cookieParser = require('cookie-parser');
+
 
 const homeRoutes = require('./routes/home');
 const authRoutes = require('./routes/auth');
@@ -16,14 +18,15 @@ const paymentRoutes = require('./routes/payment');
 const lectureRoutes = require('./routes/lecture');
 
 // 미들웨어 등록
-app.use(cors());
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+};
+  
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
-app.use(session({
-    secret: 'sddasd123',
-    resave: false,
-    saveUninitialized: true
-}));
 
 app.use(express.static(path.join(__dirname, 'public')));
 

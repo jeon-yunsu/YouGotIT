@@ -87,14 +87,15 @@ router.post("/signUp", (req, res) => {
 // 로그인
 router.post("/signIn", async (req, res) => {
   try {
+    const key = process.env.JWT_SECRET;
     const email = req.body.UserEmail;
     const password = req.body.Password;
-    console.log("Email: " + email + " Password: " + password);
+    console.log("이메일: " + email + " 비밀번호: " + password);
 
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("내부 서버 오류");
         return;
       }
 
@@ -105,31 +106,36 @@ router.post("/signIn", async (req, res) => {
           console.log(result);
           if (err) {
             console.log(err);
-            res.status(500).send("Internal Server Error");
+            res.status(500).send("내부 서버 오류");
             return;
           }
 
           if (result.length === 0) {
-            console.log("cannot find user");
-            res.status(404).send("User not found");
+            console.log("사용자를 찾을 수 없음");
+            res.status(404).send("사용자를 찾을 수 없음");
             return;
           }
 
           const hashedPassword = result[0].Password;
 
           if (bcrypt.compareSync(password, hashedPassword)) {
-            console.log("success");
-
-            const token = jwt.sign({ 
-              userID: result[0].UserID
-            }, "secret-key", { expiresIn: "1h" });
-            res.json({ token });
             
-            console.log("token: "+token);
+
+            const token = jwt.sign(
+              { userID: result[0].UserID },
+              key,
+              { expiresIn: "1h" }
+            );
+            
+            // 토큰을 쿠키에 저장
+            res.cookie("usertoken", token);
+            res.send({ success: true });
+
+            console.log("토큰: " + token);
 
           } else {
-            console.log("fail");
-            res.status(401).send("Invalid password");
+            console.log("실패");
+            res.status(401).send("잘못된 비밀번호");
           }
 
           conn.release();
@@ -138,9 +144,10 @@ router.post("/signIn", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("내부 서버 오류");
   }
 });
+
 
 //로그아웃
 router.get("/logout", (req, res) => {
