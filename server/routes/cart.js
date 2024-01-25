@@ -3,6 +3,10 @@ const mysql = require("../database/mysql");
 const router = express.Router();
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
+const jwt = require("jsonwebtoken");
+const verifyTokenAndGetUserId = require("../middleware/verifyTokenAndGetUserId")
+
+
 
 //장바구니 담기
 router.post("/add-lecture", async (req, res) => {
@@ -45,7 +49,12 @@ router.post("/add-lecture", async (req, res) => {
 
 //장바구니 출력
 router.get("/cartlist", (req, res) => {
-  const userId = req.headers["userid"];
+  const userId = verifyTokenAndGetUserId(req, res);
+
+  if (!userId) {
+    res.status(400).send("User ID not found in headers");
+    return;
+  }
 
   // MySQL 연결
   mysql.getConnection((error, conn) => {
@@ -60,7 +69,7 @@ router.get("/cartlist", (req, res) => {
       SELECT
         l.LectureImageURL ,
         l.LectureID ,
-        l.Title ,
+        l.LectureTitle ,
         i.InstructorName ,
         l.LecturePrice ,
         c.CreateDate 

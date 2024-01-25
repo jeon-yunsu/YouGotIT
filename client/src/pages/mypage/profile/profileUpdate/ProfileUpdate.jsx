@@ -1,42 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import './style.scss';
 import defaultProfileImage from '../../../../img/banner.png';
+import axios from "axios";
+import { baseUrl } from "../../../../config/baseUrl.js";
+import jsCookie from "js-cookie";
 
-const ProfileUpdate = ({ initialName, initialPhoneNumber, initialIntroduction }) => {
-  const [name, setName] = useState(initialName);
-  const [profileImg, setProfileImg] = useState(defaultProfileImage);
+const ProfileUpdate = () => {
   const [imageChanged, setImageChanged] = useState(false);
   const [nameChanged, setNameChanged] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber);
   const [phoneChanged, setPhoneChanged] = useState(false);
-  const [introduction, setIntroduction] = useState(initialIntroduction);
   const [introChanged, setIntroChanged] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
 
-  const onPictureChange = () => {
-    // 이미지 업로드 처리 로직...
-    setImageChanged(true); // 이미지 변경을 true로 설정
-    // setProfileImg(...) // 실제로 이미지를 업데이트 하는 로직 필요
-  };
+  const [profileInfo, setProfileInfo] = useState({
+    UserName: "",
+    phoneNumber: "",
+    Introduction: "",
+    ProfileImage: "", // 프로필 이미지 URL
+    UserNickname: "",
+    UserEmail: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = jsCookie.get("userToken");
+  
+        const response = await axios.get(`${baseUrl}/api/userInfo/mypage`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        // console.log("response.data:  " + response.data[0].UserEmail);
+        setProfileInfo(response.data[0]);
+      } catch (error) {
+        console.error("프로필 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+  
+    fetchData();
+    // console.log("profileInfo.email  :"+ profileInfo.UserEmail);
+  }, []);
 
   const onNameChange = (event) => {
-    setName(event.target.value);
+    setProfileInfo({ ...profileInfo, UserNickname: event.target.value });
     setNameChanged(true);
   };
 
   const onPhoneChange = (event) => {
-    setPhoneNumber(event.target.value);
+    setProfileInfo({ ...profileInfo, phoneNumber: event.target.value });
     setPhoneChanged(true);
   };
 
   const onIntroChange = (event) => {
-    setIntroduction(event.target.value);
+    setProfileInfo({ ...profileInfo, Introduction: event.target.value });
     setIntroChanged(true);
   };
 
+  const onPictureChange = (event) => {
+    setProfileInfo({ ...profileInfo, ProfileImage: event.target.value });
+    setImageChanged(true);
+  };
+  
   const onSaveChanges = () => {
     if (imageChanged || nameChanged || phoneChanged || introChanged) {
       console.log('변경 사항 저장');
@@ -83,7 +113,7 @@ const ProfileUpdate = ({ initialName, initialPhoneNumber, initialIntroduction })
       <div className='profile-nav'>
         <div className='profile-content'>
           <div className='profile-image-container'>
-            <img src={profileImg} alt='Profile' className='profile-image' />
+            <img src={profileInfo.ProfileImage} alt='Profile' className='profile-image' />
             <p className='upload-instructions'>
               최대 1MB까지 업로드 가능합니다.
               <br />
@@ -98,7 +128,7 @@ const ProfileUpdate = ({ initialName, initialPhoneNumber, initialIntroduction })
               닉네임 변경
               <input
                 type='text'
-                value={name}
+                value={profileInfo.UserNickname}
                 onChange={onNameChange}
                 placeholder='닉네임'
                 className='input-field'
@@ -120,7 +150,7 @@ const ProfileUpdate = ({ initialName, initialPhoneNumber, initialIntroduction })
             <input
               id='cellphone'
               type='text'
-              value={phoneNumber}
+              value={profileInfo.phoneNumber}
               onChange={onPhoneChange}
               placeholder='전화번호 입력'
               className='input-field'
@@ -140,7 +170,7 @@ const ProfileUpdate = ({ initialName, initialPhoneNumber, initialIntroduction })
             <label htmlFor='introduction'>자기소개 변경</label>
             <textarea
               id='introduction'
-              value={introduction}
+              value={profileInfo.Introduction}
               onChange={onIntroChange}
               placeholder='자기소개 입력'
               className='input-field'

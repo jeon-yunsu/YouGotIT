@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { signIn } from "../../../apis/authApi.tsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
 import Logo from "../../../img/YouGotITLogo2.png";
+import { AuthContext } from "../../../context/authContext.js";
 
 const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const { signIn } = useContext(AuthContext);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
 
     try {
-      // Call the signIn function from the imported api module
-      const response = await signIn(username, password);
+      await signIn(username, password);
 
-      console.log("서버 응답:", response);
-
+      closeModal();
+      window.location.reload();
     } catch (error) {
       console.error('인증 중 오류:', error);
     }

@@ -22,7 +22,7 @@ router.get("/:searchWord", (req, res) => {
         SELECT
           l.LectureID,
           l.LectureImageURL,
-          l.Title,
+          l.LectureTitle,
           l.LecturePrice,
           AVG(c.Rating) AS AverageRating
         FROM

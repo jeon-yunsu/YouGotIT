@@ -53,7 +53,7 @@ router.get("/lectures/:categoryID", (req, res) => {
         SELECT 
           l.LectureID,
           l.LectureImageURL,
-          l.Title,
+          l.LectureTitle,
           AVG(c2.Rating) AS AverageRating,
           l.LecturePrice 
         FROM 

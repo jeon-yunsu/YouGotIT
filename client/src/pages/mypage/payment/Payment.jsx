@@ -1,8 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './style.scss';
+import axios from 'axios';
+import jsCookie from 'js-cookie';
+import { baseUrl } from '../../../config/baseUrl';
 
-const Payment = ({ payments }) => {
+const Payment = () => {
+  const [payments, setPayments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = jsCookie.get('userToken');
+
+        const response = await axios.get(`${baseUrl}/api/modify/payment`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('response.data:  ' + JSON.stringify(response.data));
+        setPayments(response.data);
+      } catch (error) {
+        console.error('프로필 정보를 불러오는 중 오류 발생:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className='payment'>
       <div className='list-title'>결제내역</div>
@@ -17,12 +44,12 @@ const Payment = ({ payments }) => {
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment) => (
-              <tr key={payment.no}>
-                <td className='payment-no'>{payment.no}</td>
-                <td className='payment-title'>{payment.title}</td>
-                <td className='payment-price'>{payment.price}</td>
-                <td className='payment-date'>{payment.paymentDate}</td>
+            {payments.map((payment, index) => (
+              <tr key={index}>
+                <td className='payment-no'>{index + 1}</td>
+                <td className='payment-title'>{payment.Title}</td>
+                <td className='payment-price'>{payment.LecturePrice}</td>
+                <td className='payment-date'>{payment.PaymentDate}</td>
               </tr>
             ))}
           </tbody>

@@ -1,12 +1,54 @@
 // WatchLecture.jsx
 
-import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap CSS를 프로젝트에 추가해주세요
 import "./style.scss"; // 스타일 파일을 import
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import DefaultImage from "../../img/banner.png";
+import axios from "axios";
+import { baseUrl } from "../../config/baseUrl.js";
+import jsCookie from "js-cookie";
 
 const WatchLecture = () => {
+  const [tocData, setTocData] = useState([]);
+  const { lectureID } = useParams();
+  console.log(lectureID);
+  const [selectedMenuTitle, setSelectedMenuTitle] = useState("");
+  const [currentTOCID, setCurrentTOCID] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = jsCookie.get("userToken");
+        const response = await axios.get(
+          `${baseUrl}/api/lecture/${lectureID}/watch/`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTocData(response.data);
+        setCourse({
+          progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
+        });
+        if (response.data.length > 0) {
+          setSelectedMenuTitle(response.data[1].Title);
+          setCurrentTOCID(response.data[1].TOCID);
+        }
+      } catch (error) {
+        console.error("강의 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log(tocData);
+
   const [course, setCourse] = useState({
-    progress: 20, // Set the initial progress value as needed
+    progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
   });
 
   const calculateProgressBarStyle = (progress) => {
@@ -14,35 +56,19 @@ const WatchLecture = () => {
       width: `${progress}%`,
     };
   };
-  
 
-  const curriculum = [
-    {
-      TOCID: 1,
-      title: "Node.js 프로그래밍",
-      links: [
-        "Node.js 프로그래밍1",
-        "Node.js 프로그래밍2",
-        "Node.js 프로그래밍3",
-        "Node.js 프로그래밍4",
-      ],
-    },
-    {
-      TOCID: 2,
-      title: "React 프로그래밍",
-      links: [
-        "React 프로그래밍1",
-        "React 프로그래밍2",
-        "React 프로그래밍3",
-        "React 프로그래밍4",
-      ],
-    },
-    {
-      TOCID: 3,
-      title: "강의 마무리",
-      links: ["마무리", "마무리2", "마무리3", "마무리4"],
-    },
-  ];
+  const handleMenuItemClick = (TOCID) => {
+    setCurrentTOCID(TOCID);
+    console.log("currentTOCID: ", currentTOCID);
+  };
+
+  const prevButtonClick = () => {
+    setCurrentTOCID(currentTOCID-1);
+  }
+
+  const nextButtonClick = () => {
+    setCurrentTOCID(currentTOCID+1);
+  }
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -73,55 +99,55 @@ const WatchLecture = () => {
           <div className="sidebar fixed-sidebar">
             <div className="curriculum-container">
               <h1 className="title" id="curriculum">
-                따라하며 배우는 리액트 강의
+                {tocData[0].LectureTitle}
               </h1>
-              <div className='progress-bar-container'>
-            <div className='my-course-progress' style={calculateProgressBarStyle(course.progress)}>
-              {course.progress}%
-            </div>
-          </div>
-
+              <div className="progress-bar-container">
+                <div
+                  className="my-course-progress"
+                  style={calculateProgressBarStyle(course.progress)}
+                >
+                  {course.progress}%
+                </div>
+              </div>
 
               <ul>
-                {curriculum.map((menu) => (
-                  <li key={menu.TOCID} className="menu-item">
-                    <div className="menu-item-title">{menu.title}</div>
-                    {menu.TOCID === 1 && (
-                      <ul className="submenu">
-                        {menu.links.map((link, index) => (
-                          <li key={index}>
-                            <a href="#">{link}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {menu.TOCID === 2 && (
-                      <ul className="submenu">
-                        {menu.links.map((link, index) => (
-                          <li key={index}>
-                            <a href="#">{link}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {menu.TOCID === 3 && (
-                      <ul className="submenu">
-                        {menu.links.map((link, index) => (
-                          <li key={index}>
-                            <a href="#">{link}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
+                {Array.isArray(tocData) &&
+                  tocData
+                    .filter((menu) => menu.ParentTOCID === null)
+                    .map((menu) => (
+                      <li key={menu.TOCID} className="menu-item">
+                        <div className="menu-item-title">{menu.Title}</div>
+                        {tocData
+                          .filter(
+                            (subMenu) => subMenu.ParentTOCID === menu.TOCID
+                          )
+                          .map((subMenu) => (
+                            <ul key={subMenu.TOCID} className="submenu">
+                              <li>
+                                <a
+                                  href="#"
+                                  onClick={() =>
+                                    handleMenuItemClick(subMenu.TOCID)
+                                  }
+                                >
+                                  {subMenu.Title}
+                                </a>
+                              </li>
+                            </ul>
+                          ))}
+                      </li>
+                    ))}
               </ul>
             </div>
           </div>
         )}
+
         <div className={`content ${sidebarOpen ? "content-sidebar-open" : ""}`}>
           <div className="row toc-container">
-            <div className="col-10 toc-title">Node.js 프로그래밍1</div>
+            <div className="col-10 toc-title">
+              {tocData.length > 0 &&
+                tocData.find((item) => item.TOCID === currentTOCID)?.Title}
+            </div>
           </div>
           <div className="row">
             <div className="col-12">
@@ -143,10 +169,10 @@ const WatchLecture = () => {
           </div>
           <div className="row my-4">
             <div className="col-6 text-center">
-              <button className="btn btn-outline-secondary w-100">Prev</button>
+              <button className="btn btn-outline-secondary w-100" onClick={prevButtonClick}>Prev</button>
             </div>
             <div className="col-6 text-center">
-              <button className="btn btn-outline-secondary w-100">Next</button>
+              <button className="btn btn-outline-secondary w-100" onClick={nextButtonClick}>Next</button>
             </div>
           </div>
         </div>

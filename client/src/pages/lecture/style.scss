@@ -109,7 +109,7 @@ $gray: #EEE;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     }
 
-    .lecture-imformation {
+    .lecture-information {
       display: flex;
       align-items: center;
 
@@ -124,10 +124,9 @@ $gray: #EEE;
       border-radius: 8px;
     }
 
-    .lecture-imformation-details {
+    .lecture-information-details {
       display: flex;
       flex-direction: column;
-      margin-left: 20px;
     }
 
     .lecture-time {
@@ -190,11 +189,14 @@ $gray: #EEE;
 
     .lecture-button {
       display: flex;
+      width: 300px;
       gap: 10px;
     }
 
     .lecture-paid,
     .lecture-add-cart {
+      width: 110px;
+      height: 44px;
       padding: 10px;
       background-color: #007bff;
       color: #fff;
@@ -247,6 +249,10 @@ $gray: #EEE;
 
   .lecture-details-instructor {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
   }
 
   .curriculum-container {

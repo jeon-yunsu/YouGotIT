@@ -250,6 +250,17 @@ h5 {
     display: flex;
     align-items: center;
     margin-top: 20px; // 체크박스 위의 간격 조정
+    width: auto;
+
+    input{
+      width: 30px;
+    }
+
+    label{
+      width: 188px;
+    }
+
+
   }
 
 }

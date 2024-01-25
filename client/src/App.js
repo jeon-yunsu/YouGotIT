@@ -21,7 +21,7 @@ import Mypage from "./pages/mypage/Mypage"; //마이페이지
 import Lecture from "./pages/lecture/Lecture";
 import WatchLecture from "./pages/watchLecture/WatchLecture";
 import ProfileUpdate from "./pages/mypage/profile/profileUpdate/ProfileUpdate";
-
+import MyCourse from "./pages/mypage/mycourse/MyCourse";
 import Header from "../src/components/Header/Header"
 import Footer from "../src/components/Footer/Footer"
 
@@ -47,8 +47,13 @@ const router = createBrowserRouter([
       },
       
       {
-        path: "/watchLecture",
+        path: "/watchLecture/:lectureID",
         element: <WatchLecture />
+      },
+
+      {
+        path: "/mycourse",
+        element: <MyCourse />
       },
      
       {
