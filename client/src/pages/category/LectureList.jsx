@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Banner from "../../img/banner.png";
 import "./style.scss";
@@ -34,43 +34,38 @@ const StarRatings = ({ rating }) => {
   );
 };
 
-const Search = () => {
+const LectureList = () => {
+  const [lectureListData, setLectureListData] = useState(null);
   const location = useLocation();
-  const searchWord = location.state?.searchWord;
-  const [searchData, setSearchData] = useState(null);
+  const categoryID = location.state?.categoryID;
+  const categoryName = location.state?.categoryName;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/search-list/${searchWord}`,
+          `${baseUrl}/api/categories/lectures/${categoryID}`,
           {
             withCredentials: true,
-            params: {
-              searchWord: searchWord,
-            },
           }
         );
-        console.log(searchWord);
-        setSearchData(response.data);
-        console.log('response.data123:  ', response.data);
+        setLectureListData(response.data);
       } catch (error) {
-        console.error('검색 중 오류:', error);
+        console.error('강의 리스트 가져오는 중 오류 발생:', error);
       }
     };
 
     fetchData();
-  }, [searchWord]);
-
-  console.log("searchData:", searchData);
+  }, [categoryID]);
+  console.log("lectureListData:", lectureListData)
 
   return (
     <div className="search">
       <img className="banner-image" src={Banner} alt="banner" />
-      <h3 className="search-word">{searchWord} 검색 결과</h3>
+      <h3 className="search-word">선택한 카테고리: {categoryName}</h3>
       <div className="card-container">
-        {searchData && searchData.length > 0 ? (
-          searchData.map((course) => (
+        {lectureListData && lectureListData.length > 0 ? (
+          lectureListData.map((course) => (
             <div className="card" key={course.LectureID}>
               <img
                 className="card-image"
@@ -93,4 +88,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default LectureList;

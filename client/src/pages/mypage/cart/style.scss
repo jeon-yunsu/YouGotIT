@@ -97,6 +97,52 @@ img {
   }
 }
 
+.cartTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid #1b1c1d;
+  padding-bottom: 12px;
+
+  .select {
+    display: flex;
+    align-items: center;
+    margin-left: auto; // 버튼을 맨 오른쪽으로 이동
+  }
+
+  .selectAll {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    border: 2px solid #1b1c1d;
+    margin-right: 8px;
+  }
+
+  .selected {
+    height: 22px;
+    color: #1b1c1d;
+  }
+
+  button {
+    background-color: #6096b4;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    width: 100px;
+    min-width: 100px;
+    font-size: 13px;
+    margin-left: 666px;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
 // TABLE HEADING
 
 .tableHead {
@@ -118,6 +164,12 @@ img {
 
 .cart {
   padding: 1em 0;
+
+  .cartChk {
+    width: 12px;
+    height: auto;
+    margin-right: 8px;
+  }
 
   .items {
     display: block;
@@ -144,8 +196,8 @@ img {
         font-weight: bold;
         letter-spacing: 0.025em;
         overflow: hidden;
-        text-overflow: ellipsis;  
-        white-space: nowrap;      
+        text-overflow: ellipsis;
+        white-space: nowrap;
         text-align: left;
         width: 500px;
       }
@@ -283,7 +335,7 @@ a.remove {
     font-size: 1em;
     padding: 1em 3em;
     color: #fff;
-    background: #6096B4;
+    background: #6096b4;
     font-weight: bold;
     border-radius: 50px;
     float: right;

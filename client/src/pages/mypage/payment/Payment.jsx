@@ -20,7 +20,7 @@ const Payment = () => {
           },
         });
 
-        console.log('response.data:  ' + JSON.stringify(response.data));
+        // console.log('response.data:  ' + JSON.stringify(response.data));
         setPayments(response.data);
       } catch (error) {
         console.error('프로필 정보를 불러오는 중 오류 발생:', error);
@@ -47,9 +47,9 @@ const Payment = () => {
             {payments.map((payment, index) => (
               <tr key={index}>
                 <td className='payment-no'>{index + 1}</td>
-                <td className='payment-title'>{payment.Title}</td>
+                <td className='payment-title'>{payment.LectureTitle}</td>
                 <td className='payment-price'>{payment.LecturePrice}</td>
-                <td className='payment-date'>{payment.PaymentDate}</td>
+                <td className='payment-date'>{payment.PaymentDate.split('T')[0]}</td>
               </tr>
             ))}
           </tbody>

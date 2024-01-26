@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./style.scss";
 import DefaultImage from "../../img/banner.png";
 import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
-
+import { AuthContext } from "../../context/authContext.js";
 const StarRatings = ({ rating }) => {
   const ratingToPercent = () => {
     const score = +rating * 20;
@@ -41,6 +41,7 @@ const Lecture = () => {
   const [commentData, setCommentData] = useState({});
   const [menuStates, setMenuStates] = useState({});
   const { lectureID } = useParams();
+  const { currentUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,24 +55,6 @@ const Lecture = () => {
 
     setMenuStates(initialState);
   }, [tocData]);
-
-  const createToggleFunction = (menuIndex) => {
-    return () => {
-      setMenuStates((prevStates) => {
-        const updatedStates = { ...prevStates };
-        updatedStates[`menu${menuIndex + 1}Open`] =
-          !prevStates[`menu${menuIndex + 1}Open`];
-        return updatedStates;
-      });
-    };
-  };
-
-  const handleScrollToSection = (sectionId) => {
-    const sectionElement = document.getElementById(sectionId);
-    if (sectionElement) {
-      sectionElement.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +77,26 @@ const Lecture = () => {
 
     fetchData();
   }, []);
+
+  const createToggleFunction = (menuIndex) => {
+    return () => {
+      setMenuStates((prevStates) => {
+        const updatedStates = { ...prevStates };
+        updatedStates[`menu${menuIndex + 1}Open`] =
+          !prevStates[`menu${menuIndex + 1}Open`];
+        return updatedStates;
+      });
+    };
+  };
+
+  const handleScrollToSection = (sectionId) => {
+    const sectionElement = document.getElementById(sectionId);
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  
 
   // console.log("lectureData:", lectureData);
   // console.log("tocData:", tocData);
@@ -133,13 +136,13 @@ const Lecture = () => {
             <div className="lecture-information-details">
               <div className="lecture-category">
                 {categoryData && Array.isArray(categoryData)
-                  ? categoryData.map((cat) => cat.CategoryName).join(", ")
+                  ? categoryData.map((cat) => cat.CategoryName).join("/")
                   : "카테고리 정보 없음"}
               </div>
 
               <div className="lecture-title">
                 {lectureData.length > 0
-                  ? lectureData[0].Title
+                  ? lectureData[0].LectureTitle
                   : "강의 제목 없음"}
               </div>
             </div>

@@ -39,6 +39,7 @@ router.get("/all", (req, res) => {
 //특정 카테고리 클릭시 해당 카테고리의 강의들을 평점순으로 출력
 router.get("/lectures/:categoryID", (req, res) => {
   const categoryID = req.params.categoryID;
+  console.log(categoryID);
 
   // MySQL 연결
   mysql.getConnection((error, conn) => {

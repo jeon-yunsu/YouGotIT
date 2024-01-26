@@ -46,7 +46,7 @@ const MyCourse = () => {
             src={course.LectureImageURL || lectureDefaultImage}
             alt=""
           />
-          <div className='my-course-title'>{course.Title}</div>
+          <div className='my-course-title'>{course.LectureTitle}</div>
           <div className='progress-bar-container'>
             <div className='my-course-progress' style={calculateProgressBarStyle(course.AttendanceRate)}>
               {course.AttendanceRate}%

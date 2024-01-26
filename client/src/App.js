@@ -24,6 +24,7 @@ import ProfileUpdate from "./pages/mypage/profile/profileUpdate/ProfileUpdate";
 import MyCourse from "./pages/mypage/mycourse/MyCourse";
 import Header from "../src/components/Header/Header"
 import Footer from "../src/components/Footer/Footer"
+import LectureList from "./pages/category/LectureList";
 
 const Layout = () => {
   return (
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <Search />
+      },
+      {
+        path: "/lectureList",
+        element: <LectureList />
       },
       {
         path: "/mypage",

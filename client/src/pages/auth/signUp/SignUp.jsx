@@ -20,6 +20,7 @@ const SignUp = () => {
   const [nicknameError, setNickNameError] = useState("");
   const [nameError, setNameError] = useState("");
   const [cellphoneError, setCellPhoneError] = useState("");
+  const [privacyAgree, setPrivacyAgree] = useState("");
   const messages = [
     "나의 성장을 돕는 IT 실무 지식 플랫폼",
     "성장에 목마를 때, You Got IT",
@@ -43,7 +44,7 @@ const SignUp = () => {
   const validateEmail = async () => {
     // 이메일 유효성 검사를 수행
     const emailRegex = /^[^\s@]{5,}@[^\s@]+\.(com|net)$/;
-  
+
     if (!email) {
       setEmailError("이메일 주소를 입력해주세요.");
       return false;
@@ -53,13 +54,16 @@ const SignUp = () => {
     } else {
       // 서버 사이드에서의 중복 검사를 위한 API 요청
       try {
-        const response = await axios.get(`${baseUrl}/api/auth/duplication-email`, {
-          params: {
-            email: email
-          },
-          withCredentials: true,
-        });
-  
+        const response = await axios.get(
+          `${baseUrl}/api/auth/duplication-email`,
+          {
+            params: {
+              email: email,
+            },
+            withCredentials: true,
+          }
+        );
+
         if (response.data.isDuplicate) {
           setEmailError("중복된 이메일 주소입니다.");
           return false;
@@ -73,7 +77,6 @@ const SignUp = () => {
       }
     }
   };
-  
 
   const validateName = () => {
     // 이름 유효성 검사를 수행
@@ -93,13 +96,16 @@ const SignUp = () => {
 
   const validatePassword = () => {
     // 비밀번호 유효성 검사를 수행
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
     if (!password) {
       setPasswordError("비밀번호를 입력해주세요.");
       return false;
     } else if (!passwordRegex.test(password)) {
-      setPasswordError("비밀번호는 최소 8자 이상, 영문자와 숫자, 특수 문자를 포함해야 합니다.");
+      setPasswordError(
+        "비밀번호는 최소 8자 이상, 영문자와 숫자, 특수 문자를 포함해야 합니다."
+      );
       return false;
     } else {
       setPasswordError("");
@@ -122,11 +128,14 @@ const SignUp = () => {
   };
 
   const validateCellPhone = async () => {
-    // 클라이언트 사이드에서의 전화번호 유효성 검사
+    // 전화번호 유효성 검사
     const cellPhoneRegex = /^010[0-9]{8}$/;
 
     if (!cellphone) {
       setCellPhoneError("전화번호를 입력해주세요.");
+      return false;
+    } else if (cellphone.includes("-")) {
+      setCellPhoneError("전화번호에는 하이픈(-)을 포함할 수 없습니다.");
       return false;
     } else if (!cellPhoneRegex.test(cellphone)) {
       setCellPhoneError("유효한 전화번호 형식을 입력해주세요.");
@@ -134,13 +143,16 @@ const SignUp = () => {
     } else {
       // 서버 사이드에서의 중복 검사를 위한 API 요청
       try {
-        const response = await axios.get(`${baseUrl}/api/auth/duplication-cellphone`, {
-          params: {
-            cellphone: cellphone
-          },
-          withCredentials: true,
-        });
-  
+        const response = await axios.get(
+          `${baseUrl}/api/auth/duplication-cellphone`,
+          {
+            params: {
+              cellphone: cellphone,
+            },
+            withCredentials: true,
+          }
+        );
+
         if (response.data.isDuplicate) {
           setCellPhoneError("중복된 전화번호입니다.");
           return false;
@@ -158,7 +170,7 @@ const SignUp = () => {
   const validateNickname = async () => {
     // 클라이언트 사이드에서의 닉네임 형식 검사
     const nicknameRegex = /^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|].{1,8}$/;
-    
+
     if (!nickname) {
       setNickNameError("닉네임을 입력해주세요.");
       return false;
@@ -168,12 +180,15 @@ const SignUp = () => {
     } else {
       // 서버 사이드에서의 중복 검사를 위한 API 요청
       try {
-        const response = await axios.get(`${baseUrl}/api/auth/duplication-nickname`, {
-          params: {
-            nickname: nickname
-          },
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${baseUrl}/api/auth/duplication-nickname`,
+          {
+            params: {
+              nickname: nickname,
+            },
+            withCredentials: true,
+          }
+        );
         console.log(response.data.isDuplicate);
         if (response.data.isDuplicate) {
           setNickNameError("중복된 닉네임입니다.");
@@ -188,10 +203,14 @@ const SignUp = () => {
       }
     }
   };
-  
 
   const onSignUpButtonClick = async (e) => {
     e.preventDefault();
+
+    if (!privacyAgree) {
+      alert("개인 정보 수집 및 이용에 동의해주세요.");
+      return;
+    }
 
     const isEmailValid = validateEmail();
     const isNicknameValid = validateNickname();
@@ -200,23 +219,35 @@ const SignUp = () => {
     const isPasswordValid = validatePassword();
     const isPasswordMatchValid = validatePasswordMatch();
 
-    if (isEmailValid && isNicknameValid && isNameValid && isPasswordValid && isPasswordMatchValid && isCellPhoneValid) {
+    if (
+      isEmailValid &&
+      isNicknameValid &&
+      isNameValid &&
+      isPasswordValid &&
+      isPasswordMatchValid &&
+      isCellPhoneValid
+    ) {
       try {
         // 여기에 회원가입을 위한 API 호출 추가
-        const response = await axios.post(`${baseUrl}/api/auth/signUp`, {
-          UserEmail: email,
-          UserName: name,
-          Password: password,
-          PasswordCheck: passwordCheck,
-          UserCellPhone: cellphone,
-          UserNickname: nickname,
-        }, {
-          withCredentials: true,
-        });
-        
+        const response = await axios.post(
+          `${baseUrl}/api/auth/signUp`,
+          {
+            UserEmail: email,
+            UserName: name,
+            Password: password,
+            PasswordCheck: passwordCheck,
+            UserCellPhone: cellphone,
+            UserNickname: nickname,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
         // API 호출에 대한 후속 처리 추가
         console.log("회원가입 성공:", response);
+        alert(`${name}님, 환영합니다!`);
+        navigate("/");
       } catch (error) {
         console.error("회원가입 중 오류 발생:", error);
       }
@@ -295,18 +326,20 @@ const SignUp = () => {
             onChange={(e) => setPasswordCheck(e.target.value)}
             onBlur={validatePasswordMatch}
           />
-          {passwordMatchError && <p className="error-message">{passwordMatchError}</p>}
+          {passwordMatchError && (
+            <p className="error-message">{passwordMatchError}</p>
+          )}
         </div>
 
         <div className="form-input-block">
           <label htmlFor="cellphone" className="form-label">
             전화번호
           </label>
-          <input 
-            className="signup-form-input" 
-            type="text" 
-            name="email" 
-            placeholder="010-0000-0000" 
+          <input
+            className="signup-form-input"
+            type="text"
+            name="email"
+            placeholder="01012345678"
             value={cellphone}
             onChange={(e) => setCellPhone(e.target.value)}
             onBlur={validateCellPhone}
@@ -336,10 +369,15 @@ const SignUp = () => {
       </form>
 
       <div>
-        <div className="checkbox-container">
-          <input className="signup-checkbox" type="checkbox" />
-          <p className="signup-checkbox-text">개인 정보 수집 및 이용</p>
-        </div>
+      <div className="checkbox-container">
+        <input
+          className="signup-checkbox"
+          type="checkbox"
+          checked={privacyAgree}
+          onChange={() => setPrivacyAgree(!privacyAgree)}
+        />
+        <p className="signup-checkbox-text">개인 정보 수집 및 이용에 동의</p>
+      </div>
       </div>
       <div
         className="link"

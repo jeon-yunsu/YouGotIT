@@ -86,7 +86,7 @@ const Home = () => {
                 alt="Course"
               />
               <div className="card-content">
-                <h2 className="card-title">{course.Title}</h2>
+                <h2 className="card-title">{course.LectureTitle}</h2>
                 <p className="card-instructor">{course.InstructorName}</p>
                 <p className="card-price">{`₩${course.LecturePrice}`}</p>
                 <StarRatings rating={course.AverageRating} />
@@ -115,7 +115,7 @@ const Home = () => {
                 alt="Course"
               />
               <div className="card-content">
-                <h2 className="card-title">{course.Title}</h2>
+                <h2 className="card-title">{course.LectureTitle}</h2>
                 <p className="card-instructor">{course.InstructorName}</p>
                 <p className="card-price">{`₩${course.LecturePrice}`}</p>
                 <StarRatings rating={course.AverageRating} />

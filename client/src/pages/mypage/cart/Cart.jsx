@@ -7,7 +7,9 @@ import jsCookie from "js-cookie";
 import lectureDefaultImage from "../../../img/lectureDefaultImage.png";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]); // Initialize as an array
+  const [cartItems, setCartItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,10 +45,46 @@ const Cart = () => {
     setCartItems(updatedCart);
   };
 
+  // 전체 선택 및 선택 해제
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    setSelectedItems(selectAll ? [] : cartItems.map((_, index) => index));
+  };
+
+  // 특정 아이템 선택 및 해제
+  const handleCheckboxChange = (index) => {
+    const isSelected = selectedItems.includes(index);
+
+    if (isSelected) {
+      setSelectedItems(selectedItems.filter((item) => item !== index));
+    } else {
+      setSelectedItems([...selectedItems, index]);
+    }
+  };
+
+  // 선택된 아이템 삭제
+  const handleRemoveSelected = () => {
+    const updatedCart = cartItems.filter((_, index) => !selectedItems.includes(index));
+    setCartItems(updatedCart);
+    setSelectedItems([]);
+  };
+
   return (
     <div className="wrap cf">
       <div className="heading cf">
         <div className="cart-title">장바구니</div>
+      </div>
+      <div className="cartTop">
+        <div className="select">
+        <input
+          className="selectAll"
+          type="checkbox"
+          checked={selectAll}
+          onChange={handleSelectAll}
+        /> 
+        <span className="selected">전체선택 {selectedItems.length}/{cartItems.length}</span>
+        <button onClick={handleRemoveSelected}>선택삭제</button>
+        </div>
       </div>
       <div className="cart">
         <ul className="cartWrap">
@@ -56,6 +94,12 @@ const Cart = () => {
               className={`items ${index % 2 === 0 ? "even" : "odd"}`}
             >
               <div className="infoWrap">
+                <input 
+                  className="cartChk"
+                  type="checkbox"
+                  checked={selectedItems.includes(index)}
+                  onChange={() => handleCheckboxChange(index)}
+                />
                 <div className="cartSection">
                   {item.LectureImageURL ? (
                     <img
@@ -70,7 +114,7 @@ const Cart = () => {
                       className="itemImg"
                     />
                   )}
-                  <h3>{item.Title}</h3>
+                  <h3>{item.LectureTitle}</h3>
                   <p className="cart-instructor">{item.InstructorName}</p>
                 </div>
                 <div className="prodTotal cartSection">

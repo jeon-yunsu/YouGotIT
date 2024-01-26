@@ -50,12 +50,13 @@
         padding: 10px;
         z-index: 1;
 
-        a {
+        .dropdown-title {
           display: block;
           padding: 8px 0;
           text-decoration: none;
           color: #333;
           transition: background-color 0.3s;
+          cursor: pointer;
 
           &:hover {
             background-color: #f5f5f5;
