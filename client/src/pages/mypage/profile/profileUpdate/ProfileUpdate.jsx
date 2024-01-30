@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext,useHistory } from "react";
 import "./style.scss";
 import defaultProfileImage from "../../../../img/banner.png";
 import axios from "axios";
 import { baseUrl } from "../../../../config/baseUrl.js";
 import jsCookie from "js-cookie";
 import { AuthContext } from "../../../../context/authContext.js";
-
+import { useNavigate } from "react-router-dom";
 
 const ProfileUpdate = () => {
   const [imageChanged, setImageChanged] = useState(false);
@@ -19,6 +19,7 @@ const ProfileUpdate = () => {
   // const [newPassword, setNewPassword] = useState("");
   // const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const navigate = useNavigate();
   const { currentUser, logout, setCurrentUser } = useContext(AuthContext);
 
   const [profileInfo, setProfileInfo] = useState({
@@ -54,7 +55,7 @@ const ProfileUpdate = () => {
     fetchData();
   }, []);
 
-  console.log(profileInfo)
+  console.log(profileInfo);
 
   const onNicknameChange = (event) => {
     setProfileInfo({ ...profileInfo, UserNickname: event.target.value });
@@ -77,6 +78,7 @@ const ProfileUpdate = () => {
 
       if (!file) {
         console.error("No file selected");
+        setImageChanged(false);
         return;
       }
 
@@ -110,23 +112,27 @@ const ProfileUpdate = () => {
     try {
       const fileInput = fileInputRef.current;
       const file = fileInput.files[0];
-  
+
       const formData = new FormData();
       formData.append("profileImage", file);
-  
+
       const token = jsCookie.get("userToken");
-      const response = await axios.post(`${baseUrl}/api/file/fileupload`, formData, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
+      const response = await axios.post(
+        `${baseUrl}/api/file/fileupload`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       // 서버 응답에서 imagePath를 추출
       const imageUrl = response.data.imageUrl;
-      console.log("imageUrl",imageUrl);
-  
+      console.log("imageUrl", imageUrl);
+
       // 프로필 이미지 경로를 이용하여 프로필 정보 업데이트
       setProfileInfo((prevProfileInfo) => ({
         ...prevProfileInfo,
@@ -136,18 +142,15 @@ const ProfileUpdate = () => {
       setCurrentUser((prevUser) => ({
         ...prevUser,
         ProfileImage: imageUrl,
-      }))
+      }));
 
-      console.log("profileInfo123" ,profileInfo)
-  
+      console.log("profileInfo123", profileInfo);
+
       alert("프로필 이미지 변경이 완료되었습니다.");
     } catch (error) {
       console.error("프로필 이미지를 업데이트하는 중 오류 발생:", error);
     }
   };
-  
-
-  
 
   // const handleCurrentPasswordChange = (e) => {
   //   setCurrentPassword(e.target.value);
@@ -165,18 +168,38 @@ const ProfileUpdate = () => {
     setAgreed(event.target.checked);
   };
 
-  const handleAccountDeletion = () => {
+  const handleAccountDeletion = async () => {
     if (agreed) {
       console.log("회원탈퇴 처리");
-      // 여기에 회원탈퇴 처리 로직을 추가
+      if (window.confirm("정말 탈퇴 하시겠습니까?")) {
+        const token = jsCookie.get("userToken");
+        try {
+          await axios.post(
+            `${baseUrl}/api/userInfo/delete-user`,
+            {},  // 두 번째 인수로 빈 객체를 전달하여 데이터 부분을 비움
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+  
+          alert("탈퇴되었습니다.");
+          jsCookie.remove('userToken');
+          localStorage.removeItem('user');
+          navigate('/');
+        } catch (error) {
+          console.error("회원탈퇴 중 오류 발생:", error);
+        }
+      }
     }
   };
+  
 
   const onProfileImageClick = () => {
     fileInputRef.current.click();
   };
-
-  
 
   const onNicknameChangeButtonClick = async () => {
     try {
@@ -314,6 +337,7 @@ const ProfileUpdate = () => {
             <button
               onClick={onProfileImageChangeButtonClick}
               className="btn-upload"
+              disabled={!imageChanged}
             >
               프로필 이미지 업로드
             </button>
@@ -332,7 +356,7 @@ const ProfileUpdate = () => {
             <button
               onClick={onNicknameChangeButtonClick}
               className="btn-save"
-              disabled={!(imageChanged || nicknameChanged)}
+              disabled={!nicknameChanged}
             >
               변경 사항 저장
             </button>

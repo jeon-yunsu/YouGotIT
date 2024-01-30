@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import YouGotITLogo from "../../img/YouGotITLogo2.png";
 import "./style.scss";
 import SignIn from "../../pages/auth/signIn/SignIn";
-import Cookies from "js-cookie";
+import jsCookie from "js-cookie";
 import UserIcon from "../../img/defaultProfileImage.png";
 import { AuthContext } from "../../context/authContext.js";
 import axios from "axios";
@@ -12,8 +12,6 @@ import { baseUrl } from "../../config/baseUrl.js";
 const Header = () => {
   const { currentUser, logout } = useContext(AuthContext);
   // console.log("currentUser",currentUser)
-  console.log("ProfileImage", currentUser.ProfileImage);
-
 
   const navigate = useNavigate();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -24,12 +22,12 @@ const Header = () => {
   const [categoryData, setCategoryData] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get("userToken");
-    console.log("123123123")
+    const token = jsCookie.get("userToken");
     
     setIsLoggedIn(!!token);
 
     const fetchData = async () => {
+      
       try {
         const response = await axios.get(`${baseUrl}/api/categories/all`, {
           withCredentials: true,
@@ -40,8 +38,7 @@ const Header = () => {
       }
     };
     fetchData();
-
-  }, [isLoggedIn, currentUser.ProfileImage]);
+  }, [isLoggedIn, currentUser]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -158,11 +155,10 @@ const Header = () => {
                       <div className="dropdown-profile-container">
                         {currentUser && currentUser.ProfileImage !== null ? (
                           <img
-                          src={`${currentUser.ProfileImage}?${Date.now()}`}
-                          alt="프로필 이미지"
-                          className="user-profile-image"
-                        />
-                        
+                            src={currentUser.ProfileImage}
+                            alt="프로필 이미지"
+                            className="user-profile-image"
+                          />
                         ) : (
                           <img
                             src={UserIcon}

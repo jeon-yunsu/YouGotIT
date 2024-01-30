@@ -36,6 +36,7 @@ export const AuthContextProvider = ({ children }) => {
             console.error('로그아웃 중 오류:', error);
           }
         setCurrentUser(null);
+        window.location.href = "/";
     };
 
     useEffect(() => {

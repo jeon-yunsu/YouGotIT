@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
-const verifyTokenAndGetUserId = require("../middleware/verifyTokenAndGetUserId")
+const verifyTokenAndGetUserId = require("../middleware/verifyTokenAndGetUserId");
 
 // 사용자 정보 가져오기(메인페이지)
 router.get("/home", function (req, res) {
@@ -15,7 +15,7 @@ router.get("/home", function (req, res) {
     res.status(400).send("User ID not found in headers");
     return;
   }
-  
+
   // MySQL 연결
   mysql.getConnection((error, conn) => {
     if (error) {
@@ -198,8 +198,6 @@ router.post("/update-nickname", async (req, res) => {
   }
 });
 
-
-
 //전화번호 변경
 router.post("/update-cellphone", async (req, res) => {
   try {
@@ -262,8 +260,6 @@ router.post("/update-cellphone", async (req, res) => {
   }
 });
 
-
-
 //유저 소개 변경
 router.post("/update-introduction", async (req, res) => {
   try {
@@ -288,10 +284,10 @@ router.post("/update-introduction", async (req, res) => {
             res.status(500).send("Internal Server Error");
             return;
           }
-          
+
           // 쿼리 완료 후에 연결을 해제합니다.
           conn.release();
-          
+
           // 성공적으로 업데이트되었음을 응답합니다.
           res.status(200).send("Introduction updated successfully");
         }
@@ -302,7 +298,6 @@ router.post("/update-introduction", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 //비밀번호 변경
 // router.post("/update-password", async (req, res) => {
@@ -319,7 +314,7 @@ router.post("/update-introduction", async (req, res) => {
 //         " newPassword: " +
 //         newPassword+
 //         "passwordCheck"+
-//         passwordCheck 
+//         passwordCheck
 //     );
 
 //     if (password !== passwordCheck) {
@@ -435,64 +430,30 @@ router.get("/cours", (req, res) => {
 // 회원탈퇴
 router.post("/delete-user", async (req, res) => {
   try {
-    const userId = req.body.UserID;
-    const userEmail = req.body.UserEmail;
-    const inputPassword = req.body.Password;
-    console.log(
-      "userId: " +
-        userId +
-        " Password: " +
-        inputPassword +
-        " userEmail: " +
-        userEmail
-    );
+    const userId = verifyTokenAndGetUserId(req, res);
+    console.log("asdasdad", userId);
 
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
+        conn.release();
         return;
       }
 
       conn.query(
-        "SELECT UserID, Password FROM Users WHERE UserID = ? AND UserEmail = ?",
-        [userId, userEmail],
-        async (err, result) => {
-          console.log(result);
+        "DELETE FROM Users WHERE UserID = ?",
+        [userId],
+        (err, result) => {
+          conn.release();
+
           if (err) {
             console.log(err);
             res.status(500).send("Internal Server Error");
             return;
           }
 
-          if (result.length === 0) {
-            console.log("cannot find user");
-            res.status(404).send("User not found");
-            return;
-          }
-
-          const hashedPassword = result[0].Password;
-
-          if (await bcrypt.compare(inputPassword, hashedPassword)) {
-            conn.query(
-              "DELETE FROM Users WHERE UserID = ?",
-              [userId],
-              (err, result) => {
-                console.log(result);
-                if (err) {
-                  console.log(err);
-                  res.status(500).send("Internal Server Error");
-                  return;
-                }
-                res.status(200).send("User deleted successfully");
-              }
-            );
-          } else {
-            console.log("password does not match");
-            res.status(401).send("Password does not match");
-          }
-
-          conn.release();
+          res.status(200).send("User deleted successfully");
         }
       );
     });

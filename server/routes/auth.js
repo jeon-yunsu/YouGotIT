@@ -90,12 +90,11 @@ router.post("/signIn", async (req, res) => {
     const key = process.env.JWT_SECRET;
     const email = req.body.UserEmail;
     const password = req.body.Password;
-    // console.log("이메일: " + email + " 비밀번호: " + password);
 
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
-        res.status(500).send("내부 서버 오류");
+        res.status(500).json({ error: "내부 서버 오류" });
         return;
       }
 
@@ -103,16 +102,15 @@ router.post("/signIn", async (req, res) => {
         "SELECT u.UserID, u.UserEmail, u.UserName, u.ProfileImage, u.Password FROM Users u WHERE u.UserEmail = ?",
         [email],
         (err, result) => {
-          // console.log(result);
           if (err) {
             console.log(err);
-            res.status(500).send("내부 서버 오류");
+            res.status(500).json({ error: "내부 서버 오류" });
             return;
           }
 
           if (result.length === 0) {
-            console.log("사용자를 찾을 수 없음");
-            res.status(404).send("사용자를 찾을 수 없음");
+            console.log("등록되지 않은 이메일입니다.");
+            res.status(404).json({ error: "등록되지 않은 이메일입니다." });
             return;
           }
 
@@ -135,11 +133,11 @@ router.post("/signIn", async (req, res) => {
               UserName: result[0].UserName,
               ProfileImage: result[0].ProfileImage
             };
-            res.send({ success: true, userData });
+            res.json({ success: true, userData });
 
           } else {
-            console.log("실패");
-            res.status(401).send("잘못된 비밀번호");
+            console.log("비밀번호가 일치하지 않습니다.");
+            res.status(401).json({ error: "비밀번호가 일치하지 않습니다." });
           }
 
           conn.release();
@@ -148,9 +146,11 @@ router.post("/signIn", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("내부 서버 오류");
+    res.status(500).json({ error: "내부 서버 오류" });
   }
 });
+
+
 
 
 

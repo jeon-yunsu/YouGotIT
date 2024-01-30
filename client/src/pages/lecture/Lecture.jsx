@@ -220,7 +220,9 @@ const Lecture = () => {
         // 이미 장바구니에 담겨있는지 확인
         if (isInCart) {
           alert("이미 장바구니에 담겨있습니다.");
-        } else {
+        } else if(isEnrollment){
+          alert("이미 수강한 강의입니다.");
+        }else {
           // 장바구니에 담기
           await axios.post(
             `${baseUrl}/api/cart/add-lecture`,
@@ -311,7 +313,7 @@ const Lecture = () => {
                   수강하기
                 </button>
               )}
-              {!isInCart && (
+              {isInCart || !isEnrollment && (
                 <button
                   className="lecture-add-cart"
                   onClick={() => addToCartHandler()}
@@ -437,6 +439,10 @@ const Lecture = () => {
         <hr className="lecture-hr" />
         <div className="lecture-details-comment" id="comment">
           <h3 className="lecture-details-title">수강평</h3>
+          <div className="lecture-details-comment-input-container">
+            <textarea className="lecture-details-comment-input" name="" id="" cols="100" rows="5"></textarea>
+            <button className="">수강평 등록</button>
+          </div>
           <div className="lecture-details-comment-content">
             {commentData && Array.isArray(commentData)
               ? commentData.map((comment) => (

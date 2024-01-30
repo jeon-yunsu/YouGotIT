@@ -13,16 +13,26 @@ const SignIn = ({ closeModal }) => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-
+  
     try {
       await signIn(username, password);
-
+  
       closeModal();
       window.location.reload();
     } catch (error) {
       console.error('인증 중 오류:', error);
+  
+      // 에러 메시지에 따라 다른 알림을 사용자에게 보여줄 수 있습니다.
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.error || '로그인 중 오류가 발생했습니다.';
+        alert(errorMessage);
+      } else {
+        alert('로그인 중 오류가 발생했습니다.');
+      }
     }
-  };
+};
+
+  
 
   return (
     <div className="auth-signin">
