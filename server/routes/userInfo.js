@@ -107,9 +107,8 @@ router.get("/mypage", (req, res) => {
 //사용자 프로필 이미지 변경
 router.post("/update-profileImage", async (req, res) => {
   try {
-    console.log(req.body);
-    const userId = req.body.UserID;
-    const profileImage = req.body.ProfileImage;
+    const userId = verifyTokenAndGetUserId(req, res);
+    const profileImage = req.files.ProfileImage;
     console.log(profileImage, userId);
 
     mysql.getConnection((error, conn) => {
@@ -142,76 +141,133 @@ router.post("/update-profileImage", async (req, res) => {
 //닉네임 수정
 router.post("/update-nickname", async (req, res) => {
   try {
-    const userId = req.body.UserID;
+    const userId = verifyTokenAndGetUserId(req, res);
     const userNickname = req.body.UserNickname;
-    console.log(userNickname, userId);
+    console.log("userNickname:", userNickname, "userId", userId);
 
+    // 1. 중복 체크를 위한 쿼리 실행
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("내부 서버 오류");
         return;
       }
 
       conn.query(
-        "UPDATE Users u SET u.UserNickname = ? WHERE u.UserID = ?",
+        "SELECT COUNT(*) AS count FROM Users WHERE UserNickname = ? AND UserID <> ?",
         [userNickname, userId],
         (err, result) => {
-          console.log(result);
           if (err) {
             console.log(err);
-            res.status(500).send("Internal Server Error");
+            res.status(500).send("내부 서버 오류");
+            conn.release();
             return;
           }
-          res.send(JSON.stringify(result));
-          conn.release();
+
+          const nicknameCount = result[0].count;
+          if (nicknameCount > 0) {
+            // 닉네임이 이미 사용 중인 경우
+            res.status(400).send("이미 사용 중인 닉네임");
+            conn.release();
+            return;
+          }
+
+          // 2. 닉네임 업데이트 쿼리 실행
+          conn.query(
+            "UPDATE Users SET UserNickname = ? WHERE UserID = ?",
+            [userNickname, userId],
+            (updateErr, updateResult) => {
+              if (updateErr) {
+                console.log(updateErr);
+                res.status(500).send("내부 서버 오류");
+                conn.release();
+                return;
+              }
+
+              console.log(updateResult);
+              res.send(JSON.stringify(updateResult));
+              conn.release();
+            }
+          );
         }
       );
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("내부 서버 오류");
   }
 });
+
+
 
 //전화번호 변경
 router.post("/update-cellphone", async (req, res) => {
   try {
-    const userId = req.body.UserID;
+    const userId = verifyTokenAndGetUserId(req, res);
     const userCellPhone = req.body.UserCellPhone;
-    console.log(userCellPhone, userId);
+    console.log("userCellPhone:", userCellPhone, "userId:", userId);
 
+    // 중복 체크를 위한 쿼리 실행
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("내부 서버 오류");
         return;
       }
 
       conn.query(
-        "UPDATE Users u SET u.userCellPhone = ? WHERE u.UserID = ?",
+        "SELECT COUNT(*) AS count FROM Users u WHERE u.UserCellPhone = ? AND u.UserID <> ?",
         [userCellPhone, userId],
-        (err, result) => {
-          console.log(result);
-          if (err) {
-            console.log(err);
-            res.status(500).send("Internal Server Error");
+        (selectErr, selectResult) => {
+          if (selectErr) {
+            console.log(selectErr);
+            res.status(500).send("내부 서버 오류");
+            conn.release();
             return;
           }
-          conn.release();
+
+          const phoneCount = selectResult[0].count;
+          console.log("phoneCount:", phoneCount);
+
+          if (phoneCount > 0) {
+            // 이미 사용 중인 휴대폰 번호인 경우
+            res.status(400).send("이미 사용 중인 휴대폰 번호");
+            conn.release();
+            return;
+          }
+
+          // 중복이 없는 경우 휴대폰 번호 업데이트 쿼리 실행
+          conn.query(
+            "UPDATE Users u SET u.UserCellPhone = ? WHERE u.UserID = ?",
+            [userCellPhone, userId],
+            (updateErr, updateResult) => {
+              if (updateErr) {
+                console.log(updateErr);
+                res.status(500).send("내부 서버 오류");
+                conn.release();
+                return;
+              }
+
+              console.log(updateResult);
+              res.send(JSON.stringify(updateResult));
+              conn.release();
+            }
+          );
         }
       );
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("내부 서버 오류");
   }
 });
+
+
 
 //유저 소개 변경
 router.post("/update-introduction", async (req, res) => {
   try {
-    const userId = req.body.UserID;
+    const userId = verifyTokenAndGetUserId(req, res);
     const introduction = req.body.Introduction;
     console.log(introduction, userId);
 
@@ -232,7 +288,12 @@ router.post("/update-introduction", async (req, res) => {
             res.status(500).send("Internal Server Error");
             return;
           }
+          
+          // 쿼리 완료 후에 연결을 해제합니다.
           conn.release();
+          
+          // 성공적으로 업데이트되었음을 응답합니다.
+          res.status(200).send("Introduction updated successfully");
         }
       );
     });
@@ -241,84 +302,87 @@ router.post("/update-introduction", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 //비밀번호 변경
-router.post("/update-password", async (req, res) => {
-  try {
-    const userId = req.body.UserID;
-    const password = req.body.Password;
-    const passwordCheck = req.body.PasswordCheck;
-    const newPassword = req.body.NewPassword;
-    console.log(
-      "userId: " +
-        userId +
-        " Password: " +
-        password +
-        " newPassword: " +
-        newPassword
-    );
+// router.post("/update-password", async (req, res) => {
+//   try {
+//     const userId = req.body.UserID;
+//     const password = req.body.Password;
+//     const passwordCheck = req.body.PasswordCheck;
+//     const newPassword = req.body.NewPassword;
+//     console.log(
+//       "userId: " +
+//         userId +
+//         " Password: " +
+//         password +
+//         " newPassword: " +
+//         newPassword+
+//         "passwordCheck"+
+//         passwordCheck 
+//     );
 
-    if (password !== passwordCheck) {
-      console.log("passwords do not match");
-      res.status(400).send("Passwords do not match");
-      return;
-    }
+//     if (password !== passwordCheck) {
+//       console.log("passwords do not match");
+//       res.status(400).send("Passwords do not match");
+//       return;
+//     }
 
-    mysql.getConnection((error, conn) => {
-      if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-      }
+//     mysql.getConnection((error, conn) => {
+//       if (error) {
+//         console.log(error);
+//         res.status(500).send("Internal Server Error");
+//         return;
+//       }
 
-      conn.query(
-        "SELECT UserID, Password FROM Users WHERE UserID = ?",
-        [userId],
-        (err, result) => {
-          console.log(result);
-          if (err) {
-            console.log(err);
-            res.status(500).send("Internal Server Error");
-            return;
-          }
+//       conn.query(
+//         "SELECT UserID, Password FROM Users WHERE UserID = ?",
+//         [userId],
+//         (err, result) => {
+//           console.log(result);
+//           if (err) {
+//             console.log(err);
+//             res.status(500).send("Internal Server Error");
+//             return;
+//           }
 
-          if (result.length === 0) {
-            console.log("cannot find user");
-            res.status(404).send("User not found");
-            return;
-          }
+//           if (result.length === 0) {
+//             console.log("cannot find user");
+//             res.status(404).send("User not found");
+//             return;
+//           }
 
-          const hashedPassword = result[0].Password;
-          if (bcrypt.compareSync(password, hashedPassword)) {
-            const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
+//           const hashedPassword = result[0].Password;
+//           if (bcrypt.compareSync(password, hashedPassword)) {
+//             const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
 
-            conn.query(
-              "UPDATE Users SET Password = ? WHERE UserID = ?",
-              [hashedNewPassword, userId],
-              (err, result) => {
-                console.log(result);
-                if (err) {
-                  console.log(err);
-                  res.status(500).send("Internal Server Error");
-                  return;
-                }
-                res.status(200).send("Password changed successfully");
-              }
-            );
-          } else {
-            console.log("fail");
-            res.status(401).send("현재 비밀번호가 틀렸습니다");
-          }
+//             conn.query(
+//               "UPDATE Users SET Password = ? WHERE UserID = ?",
+//               [hashedNewPassword, userId],
+//               (err, result) => {
+//                 console.log(result);
+//                 if (err) {
+//                   console.log(err);
+//                   res.status(500).send("Internal Server Error");
+//                   return;
+//                 }
+//                 res.status(200).send("Password changed successfully");
+//               }
+//             );
+//           } else {
+//             console.log("fail");
+//             res.status(401).send("현재 비밀번호가 틀렸습니다");
+//           }
 
-          conn.release();
-        }
-      );
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//           conn.release();
+//         }
+//       );
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 //수강중인 강의 출력
 router.get("/cours", (req, res) => {

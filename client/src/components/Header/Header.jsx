@@ -9,10 +9,11 @@ import { AuthContext } from "../../context/authContext.js";
 import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
 
-
-
 const Header = () => {
   const { currentUser, logout } = useContext(AuthContext);
+  // console.log("currentUser",currentUser)
+  console.log("ProfileImage", currentUser.ProfileImage);
+
 
   const navigate = useNavigate();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -24,23 +25,23 @@ const Header = () => {
 
   useEffect(() => {
     const token = Cookies.get("userToken");
+    console.log("123123123")
+    
     setIsLoggedIn(!!token);
 
     const fetchData = async () => {
-        try {
-          const response = await axios.get(
-            `${baseUrl}/api/categories/all`,
-            {
-              withCredentials: true,
-            }
-          );
-          setCategoryData(response.data);
-        } catch (error) {
-          console.error("강의 정보를 불러오는 중 오류 발생:", error);
-        }
-    }
+      try {
+        const response = await axios.get(`${baseUrl}/api/categories/all`, {
+          withCredentials: true,
+        });
+        setCategoryData(response.data);
+      } catch (error) {
+        console.error("강의 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
     fetchData();
-  }, [isLoggedIn]);
+
+  }, [isLoggedIn, currentUser.ProfileImage]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -82,11 +83,13 @@ const Header = () => {
   };
 
   const onCategoryHandler = async (categoryId, categoryName) => {
-    navigate("/lectureList", { state: { categoryID: categoryId, categoryName: categoryName } });
+    navigate("/lectureList", {
+      state: { categoryID: categoryId, categoryName: categoryName },
+    });
   };
-  
+
   const onLogoClick = () => {
-    setSearchWord(""); 
+    setSearchWord("");
   };
 
   return (
@@ -108,15 +111,21 @@ const Header = () => {
 
           {isDropdownOpen && (
             <div className="dropdown-content">
-            {categoryData.map((category) => (
-              <div
-                className="dropdown-title"
-                onClick={() => onCategoryHandler(category.CategoryID, category.CategoryName)}
-              >
-                {category.CategoryName}
-              </div>
-            ))}
-          </div>
+              {categoryData.map((category) => (
+                <div
+                  key={category.CategoryID}
+                  className="dropdown-title"
+                  onClick={() =>
+                    onCategoryHandler(
+                      category.CategoryID,
+                      category.CategoryName
+                    )
+                  }
+                >
+                  {category.CategoryName}
+                </div>
+              ))}
+            </div>
           )}
         </div>
         <form className="search">
@@ -149,10 +158,11 @@ const Header = () => {
                       <div className="dropdown-profile-container">
                         {currentUser && currentUser.ProfileImage !== null ? (
                           <img
-                            src={currentUser.ProfileImage}
-                            alt="프로필 이미지"
-                            className="user-profile-image"
-                          />
+                          src={`${currentUser.ProfileImage}?${Date.now()}`}
+                          alt="프로필 이미지"
+                          className="user-profile-image"
+                        />
+                        
                         ) : (
                           <img
                             src={UserIcon}
@@ -175,7 +185,7 @@ const Header = () => {
                     <Link to="/mypage" className="dropdown-item">
                       프로필 설정
                     </Link>
-                    <Link to="/mycourse" className="dropdown-item">
+                    {/* <Link to="/mycourse" className="dropdown-item">
                       수강중인 강의
                     </Link>
                     <Link to="/cart" className="dropdown-item">
@@ -183,7 +193,7 @@ const Header = () => {
                     </Link>
                     <Link to="/payment" className="dropdown-item">
                       결제내역
-                    </Link>
+                    </Link> */}
                     <hr className="dropdown-hr" />
                     <button className="dropdown-item" onClick={handleLogout}>
                       로그아웃

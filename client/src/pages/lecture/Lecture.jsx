@@ -4,13 +4,15 @@ import "./style.scss";
 import DefaultImage from "../../img/banner.png";
 import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
+import jsCookie from "js-cookie";
 import { AuthContext } from "../../context/authContext.js";
+
 const StarRatings = ({ rating }) => {
   const ratingToPercent = () => {
     const score = +rating * 20;
     return score + 1.5;
   };
-
+//수강 여부에 따라 수강하기/이어서 학습하기 버튼 출력
   return (
     <div className="star-ratings">
       <div
@@ -41,7 +43,10 @@ const Lecture = () => {
   const [commentData, setCommentData] = useState({});
   const [menuStates, setMenuStates] = useState({});
   const { lectureID } = useParams();
-  const { currentUser, logout } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
+  const [isInCart, setIsInCart] = useState(false);
+  const [isEnrollment, setIsEnrollment] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,6 +62,7 @@ const Lecture = () => {
   }, [tocData]);
 
   useEffect(() => {
+    const token = jsCookie.get("userToken");
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -76,7 +82,56 @@ const Lecture = () => {
     };
 
     fetchData();
+
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/api/cart/cartlist/check`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            lectureId: lectureID,
+          },
+        });
+
+        console.log("cart API 응답:", response);
+
+        if (response.data) {
+          setIsInCart(true);
+        } else {
+          setIsInCart(false);
+        }
+      } catch (error) {
+        console.error("API 호출 중 오류:", error);
+      }
+    };
+
+    fetchCart();
+
+    const fetchEnrollment = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/api/enrollment/checked/${lectureID}`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        console.log("enroll API 응답:", response);
+
+        setIsEnrollment(response.data);
+        
+      } catch (error) {
+        console.error("API 호출 중 오류:", error);
+      }
+    };
+
+    fetchEnrollment();
   }, []);
+
+  console.log("isInCart:", isInCart);
+  console.log("isEnrollment", isEnrollment);
 
   const createToggleFunction = (menuIndex) => {
     return () => {
@@ -96,16 +151,13 @@ const Lecture = () => {
     }
   };
 
-  
-
-  // console.log("lectureData:", lectureData);
-  // console.log("tocData:", tocData);
-  // console.log("categoryData:", categoryData);
-  // console.log("commentData:", commentData);
-
   const calculateAverageRating = () => {
-    if (commentData.length === 0) {
-      return 0; // 댓글이 없는 경우 0을 반환하거나 다른 기본값을 사용할 수 있습니다.
+    if (
+      !commentData ||
+      !Array.isArray(commentData) ||
+      commentData.length === 0
+    ) {
+      return 0;
     }
 
     const totalRating = commentData.reduce((sum, comment) => {
@@ -115,10 +167,82 @@ const Lecture = () => {
     const averageRating = totalRating / commentData.length;
     return averageRating;
   };
+
+  const averageRating = calculateAverageRating();
+
   const watchLectureHandler = (lectureID) => {
-    navigate(`/watchlecture/${lectureID}`);
+    if (!currentUser) {
+      alert("로그인 후 이용해 주세요.");
+    } else {
+      navigate(`/watchlecture/${lectureID}`);
+    }
+  };
+
+  const LectureEnrollHandler = async () => {
+    if (!currentUser) {
+      alert("로그인 후 이용해 주세요.");
+    } else {
+      try {
+        const token = jsCookie.get("userToken");
+        await axios.post(
+          `${baseUrl}/api/enrollment`,
+          { lectureId: lectureID },  // 수정된 부분
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+          
+        
+        // 결제하기
+    
+
+
+        setIsEnrollment(true);
+      } catch (error) {
+        console.error("API 호출 중 오류:", error);
+      }
+    }
   };
   
+  
+  
+
+  const addToCartHandler = async () => {
+    if (!currentUser) {
+      alert("로그인 후 이용해 주세요.");
+    } else {
+      try {
+        const token = jsCookie.get("userToken");
+
+        // 이미 장바구니에 담겨있는지 확인
+        if (isInCart) {
+          alert("이미 장바구니에 담겨있습니다.");
+        } else {
+          // 장바구니에 담기
+          await axios.post(
+            `${baseUrl}/api/cart/add-lecture`,
+            {
+              LectureID: lectureID,
+            },
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          setIsInCart(true);
+          alert("장바구니에 강의를 추가했습니다.");
+        }
+      } catch (error) {
+        console.error("API 호출 중 오류:", error);
+      }
+    }
+  };
 
   return (
     <div className="lecture">
@@ -149,13 +273,7 @@ const Lecture = () => {
 
             <div className="lecture-rating-details">
               <div className="lecture-rating">
-                <StarRatings
-                  rating={
-                    lectureData &&
-                    lectureData.lecture &&
-                    lectureData.lecture.Rating
-                  }
-                />
+                <StarRatings rating={averageRating} />
               </div>
               <div className="lecture-rating-count">
                 {commentData.length > 0
@@ -178,8 +296,29 @@ const Lecture = () => {
             </div>
 
             <div className="lecture-button">
-              <button className="lecture-paid">수강하기</button>
-              <button className="lecture-add-cart">장바구니 담기</button>
+              {isEnrollment ? (
+                <button
+                  onClick={() => watchLectureHandler(lectureID)}
+                  className="lecture-paid"
+                >
+                  이어서 학습하기
+                </button>
+              ) : (
+                <button
+                  onClick={() => LectureEnrollHandler()}
+                  className="lecture-paid"
+                >
+                  수강하기
+                </button>
+              )}
+              {!isInCart && (
+                <button
+                  className="lecture-add-cart"
+                  onClick={() => addToCartHandler()}
+                >
+                  장바구니 담기
+                </button>
+              )}
             </div>
           </div>
         </div>

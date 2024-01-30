@@ -7,6 +7,7 @@ import { baseUrl } from '../../../config/baseUrl';
 
 const Payment = () => {
   const [payments, setPayments] = useState([]);
+  
 
   useEffect(() => {
     const fetchData = async () => {

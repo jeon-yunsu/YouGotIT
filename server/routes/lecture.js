@@ -289,7 +289,13 @@ router.get("/:lectureId", (req, res) => {
 
       const commentQuery = `
         SELECT
-          c.*,
+          c.CommentID,
+          c.UserID,
+          c.LectureID,
+          c.Content,
+          c.WriteDate,
+          c.UpdateDate,
+          c.Rating,
           u.UserNickname ,
           u.ProfileImage 
         FROM
@@ -550,5 +556,6 @@ router.get("/:lectureId/watch", (req, res) => {
   });
 });
 
+//강의의 수강 여부 확인
 
 module.exports = router;

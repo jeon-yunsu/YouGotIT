@@ -108,7 +108,7 @@ img {
   .select {
     display: flex;
     align-items: center;
-    margin-left: auto; // 버튼을 맨 오른쪽으로 이동
+
   }
 
   .selectAll {
@@ -120,6 +120,7 @@ img {
   }
 
   .selected {
+    width: 100px;
     height: 22px;
     color: #1b1c1d;
   }
@@ -135,7 +136,7 @@ img {
     width: 100px;
     min-width: 100px;
     font-size: 13px;
-    margin-left: 666px;
+    margin-left: 720px;
 
     &:hover {
       background-color: #0056b3;
@@ -391,7 +392,7 @@ a.remove {
       color: #777;
     }
     .value {
-      width: 120px;
+      width: 200px;
     }
   }
 }

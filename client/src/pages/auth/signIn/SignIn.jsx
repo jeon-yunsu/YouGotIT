@@ -8,7 +8,6 @@ import { AuthContext } from "../../../context/authContext.js";
 const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
   const { signIn } = useContext(AuthContext);
 
