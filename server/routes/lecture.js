@@ -423,17 +423,14 @@ router.get("/paid/:lectureId", (req, res) => {
 //수강평 등록
 router.post("/add-review", async (req, res) => {
   try {
-    const userId = req.body.UserID;
+    const userId = verifyTokenAndGetUserId(req, res);
     const lectureId = req.body.LectureID;
     const content = req.body.Content;
-    const currentDate = new Date();
     const rating = req.body.Rating;
 
-    console.log("Received data:", req.body);
     console.log("userId:", userId);
     console.log("lectureId:", lectureId);
     console.log("content:", content);
-    console.log("currentDate:", currentDate);
     console.log("rating:", rating);
 
     mysql.getConnection((error, conn) => {
@@ -444,8 +441,8 @@ router.post("/add-review", async (req, res) => {
       }
 
       conn.query(
-        "INSERT INTO Comments (UserID, LectureID, Content, WriteDate, Rating) VALUES (?, ?, ?, ?, ?);",
-        [userId, lectureId, content, currentDate, rating],
+        "INSERT INTO Comments (UserID, LectureID, Content, WriteDate, Rating) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?);",
+        [userId, lectureId, content, rating],
         (err, result) => {
           console.log(result);
           if (err) {
@@ -453,14 +450,14 @@ router.post("/add-review", async (req, res) => {
             res.status(500).send("Internal Server Error");
             return;
           }
-
+      
           // 쿼리 완료 후 연결 해제
           conn.release();
-
+      
           // 응답 보내기
           res.status(200).send("Review added successfully");
         }
-      );
+      );      
     });
   } catch (error) {
     console.log(error);

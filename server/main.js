@@ -7,7 +7,8 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
-const router = express.Router();
+const qs = require("qs");
+const axios = require("axios");
 
 const homeRoutes = require("./routes/home");
 const authRoutes = require("./routes/auth");
@@ -22,20 +23,9 @@ const fileRoute =  require('./img_server/fileUpload');
 
 // 미들웨어 등록
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://accounts.kakao.com", "http://localhost:4000"],
   credentials: true,
 };
-
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/");
-//   },
-
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname);
-//   },
-// });
-// const upload = multer({ storage: storage });
 
 app.use(cors(corsOptions));
 app.use(cookieParser());

@@ -4,10 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
 import Logo from "../../../img/YouGotITLogo2.png";
 import { AuthContext } from "../../../context/authContext.js";
+import axios from "axios";
+import { baseUrl } from "../../../config/baseUrl.js";
 
 const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [resistrationType, setRegistrationType] = useState(0);
 
   const { signIn } = useContext(AuthContext);
 
@@ -32,7 +35,14 @@ const SignIn = ({ closeModal }) => {
     }
 };
 
-  
+  const onKakaoLoginButtonClick = async () => {
+    setRegistrationType(1);
+    try {
+      window.location.href = `${baseUrl}/api/auth/kakao`;
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  }  
 
   return (
     <div className="auth-signin">
@@ -63,9 +73,10 @@ const SignIn = ({ closeModal }) => {
           <button className="signin-button" type="submit">
             로그인
           </button>
-          <button className="social-login" type="button">
+          <button className="social-login" type="button" onClick={onKakaoLoginButtonClick}>
             카카오톡 로그인
           </button>
+          {/* <a href="https://kauth.kakao.com/oauth/authorize?client_id=e37ec34685cf29a9699570d6a7a74c24&redirect_uri=http://localhost:3000/auth/kakao/callback&response_type=code">카카오 로그인</a> */}
         </div>
       </form>
     </div>

@@ -12,7 +12,7 @@ const StarRatings = ({ rating }) => {
     const score = +rating * 20;
     return score + 1.5;
   };
-//수강 여부에 따라 수강하기/이어서 학습하기 버튼 출력
+  //수강 여부에 따라 수강하기/이어서 학습하기 버튼 출력
   return (
     <div className="star-ratings">
       <div
@@ -46,6 +46,8 @@ const Lecture = () => {
   const { currentUser } = useContext(AuthContext);
   const [isInCart, setIsInCart] = useState(false);
   const [isEnrollment, setIsEnrollment] = useState(false);
+  const [commentContent, setCommentContent] = useState("");
+  const [commentRating, setCommentRating] = useState("");
 
   const navigate = useNavigate();
 
@@ -95,7 +97,7 @@ const Lecture = () => {
           },
         });
 
-        console.log("cart API 응답:", response);
+        // console.log("cart API 응답:", response);
 
         if (response.data) {
           setIsInCart(true);
@@ -111,17 +113,19 @@ const Lecture = () => {
 
     const fetchEnrollment = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/api/enrollment/checked/${lectureID}`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await axios.get(
+          `${baseUrl}/api/enrollment/checked/${lectureID}`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
-        console.log("enroll API 응답:", response);
+        // console.log("enroll API 응답:", response);
 
         setIsEnrollment(response.data);
-        
       } catch (error) {
         console.error("API 호출 중 오류:", error);
       }
@@ -130,8 +134,8 @@ const Lecture = () => {
     fetchEnrollment();
   }, []);
 
-  console.log("isInCart:", isInCart);
-  console.log("isEnrollment", isEnrollment);
+  // console.log("isInCart:", isInCart);
+  // console.log("isEnrollment", isEnrollment);
 
   const createToggleFunction = (menuIndex) => {
     return () => {
@@ -186,19 +190,16 @@ const Lecture = () => {
         const token = jsCookie.get("userToken");
         await axios.post(
           `${baseUrl}/api/enrollment`,
-          { lectureId: lectureID },  // 수정된 부분
+          { lectureId: lectureID }, // 수정된 부분
           {
             withCredentials: true,
             headers: {
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
-          
-        
-        // 결제하기
-    
 
+        // 결제하기
 
         setIsEnrollment(true);
       } catch (error) {
@@ -206,9 +207,6 @@ const Lecture = () => {
       }
     }
   };
-  
-  
-  
 
   const addToCartHandler = async () => {
     if (!currentUser) {
@@ -220,9 +218,9 @@ const Lecture = () => {
         // 이미 장바구니에 담겨있는지 확인
         if (isInCart) {
           alert("이미 장바구니에 담겨있습니다.");
-        } else if(isEnrollment){
+        } else if (isEnrollment) {
           alert("이미 수강한 강의입니다.");
-        }else {
+        } else {
           // 장바구니에 담기
           await axios.post(
             `${baseUrl}/api/cart/add-lecture`,
@@ -244,6 +242,56 @@ const Lecture = () => {
         console.error("API 호출 중 오류:", error);
       }
     }
+  };
+
+  const onCommentButtonClick = async () => {
+    if (!currentUser) {
+      alert("로그인 후 이용해 주세요.");
+    } else if (!isEnrollment) {
+      alert("수강 후 수강평을 등록할 수 있습니다.");
+    }
+  
+    const token = jsCookie.get("userToken");
+  
+    try {
+      await axios.post(
+        `${baseUrl}/api/lecture/add-review`,
+        {
+          LectureID: lectureID,
+          Content: commentContent,
+          Rating: commentRating,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+        
+      setCommentContent("");
+      setCommentRating("");
+      const response = await axios.get(
+        `${baseUrl}/api/lecture/${lectureID}`,
+        {
+          withCredentials: true,
+        }
+      );
+  
+      setCommentData(response.data.comments);
+    } catch (error) {
+      console.error("API 호출 중 오류:", error);
+    }
+  };
+  
+
+  const handleTextareaChange = (event) => {
+    setCommentContent(event.target.value);
+  };
+
+  const handleRatingChange = (event) => {
+    setCommentRating(event.target.value);
+    // console.log(commentRating);
   };
 
   return (
@@ -313,14 +361,15 @@ const Lecture = () => {
                   수강하기
                 </button>
               )}
-              {isInCart || !isEnrollment && (
-                <button
-                  className="lecture-add-cart"
-                  onClick={() => addToCartHandler()}
-                >
-                  장바구니 담기
-                </button>
-              )}
+              {isInCart ||
+                (!isEnrollment && (
+                  <button
+                    className="lecture-add-cart"
+                    onClick={() => addToCartHandler()}
+                  >
+                    장바구니 담기
+                  </button>
+                ))}
             </div>
           </div>
         </div>
@@ -440,8 +489,76 @@ const Lecture = () => {
         <div className="lecture-details-comment" id="comment">
           <h3 className="lecture-details-title">수강평</h3>
           <div className="lecture-details-comment-input-container">
-            <textarea className="lecture-details-comment-input" name="" id="" cols="100" rows="5"></textarea>
-            <button className="">수강평 등록</button>
+            <div className="star-rating-container">
+              <div className="star-rating-title">평점</div>
+              <div class="star-rating space-x-4 mx-auto">
+                <input
+                  type="radio"
+                  id="5-stars"
+                  name="rating"
+                  value="5"
+                  checked={commentRating === "5"}
+                  onChange={handleRatingChange}
+                />
+                <label for="5-stars" class="star pr-4">
+                  ★
+                </label>
+                <input
+                  type="radio"
+                  id="4-stars"
+                  name="rating"
+                  value="4"
+                  checked={commentRating === "4"}
+                  onChange={handleRatingChange}
+                />
+                <label for="4-stars" class="star">
+                  ★
+                </label>
+                <input
+                  type="radio"
+                  id="3-stars"
+                  name="rating"
+                  value="3"
+                  checked={commentRating === "3"}
+                  onChange={handleRatingChange}
+                />
+                <label for="3-stars" class="star">
+                  ★
+                </label>
+                <input
+                  type="radio"
+                  id="2-stars"
+                  name="rating"
+                  value="2"
+                  checked={commentRating === "2"}
+                  onChange={handleRatingChange}
+                />
+                <label for="2-stars" class="star">
+                  ★
+                </label>
+                <input
+                  type="radio"
+                  id="1-star"
+                  name="rating"
+                  value="1"
+                  checked={commentRating === "1"}
+                  onChange={handleRatingChange}
+                />
+                <label for="1-star" class="star">
+                  ★
+                </label>
+              </div>
+            </div>
+            <textarea
+              className="lecture-details-comment-input"
+              name="content"
+              id="content"
+              cols="100"
+              rows="5"
+              value={commentContent}
+              onChange={handleTextareaChange}
+            ></textarea>
+            <button onClick={onCommentButtonClick}>수강평 등록</button>
           </div>
           <div className="lecture-details-comment-content">
             {commentData && Array.isArray(commentData)
@@ -469,6 +586,9 @@ const Lecture = () => {
                       </div>
                     </div>
                     <div className="comment-content">{comment.Content}</div>
+                    <div className="comment-rating">
+                      평점: {comment.Rating} 점
+                    </div>
                   </div>
                 ))
               : "수강평이 없습니다."}

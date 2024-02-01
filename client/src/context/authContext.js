@@ -9,7 +9,7 @@ export const AuthContextProvider = ({ children }) => {
         JSON.parse(localStorage.getItem("user")) || null
     );
 
-    const signIn = async (username, password) => {
+    const signIn = async (username, password, registrationType) => {
         try {
             const response = await axios.post(
               `${baseUrl}/api/auth/signIn`,

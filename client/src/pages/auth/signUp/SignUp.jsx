@@ -30,6 +30,7 @@ const SignUp = () => {
   ];
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [registrationType, setRegistrationType] = useState(0);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -254,6 +255,23 @@ const SignUp = () => {
     }
   };
 
+  const onKakaoLoginButtonClick = async () => {
+    setRegistrationType(1);
+    try {
+      window.location.href = `${baseUrl}/api/auth/kakao`;
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  }  
+
+  // const onKakaoLoginButtonClick = async () => {
+  //   try {
+  //     await axios.post(`${baseUrl}/api/auth/kakao`)
+  //   } catch (error) {
+  //     console.log("error: ", error);
+  //   }
+  // }  
+
   return (
     <div className="auth-signup">
       <div className="title">회원가입</div>
@@ -389,7 +407,7 @@ const SignUp = () => {
         <span className="social-title">간편 회원가입</span>
         <div className="social-signup-button">
           <div className="social-button-wrapper">
-            <button className="kakao-login">
+            <button className="kakao-login" onClick={onKakaoLoginButtonClick}>
               <img src={Kakao} alt="" />
             </button>
           </div>
