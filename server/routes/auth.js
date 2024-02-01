@@ -6,9 +6,7 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const qs = require("qs");
-const kakaoAuth = require("../middleware/kakaoAuth");
-const passport = require("passport");
-const KakaoStrategy = require("passport-kakao").Strategy;
+
 
 router.use(bodyParser.json());
 
