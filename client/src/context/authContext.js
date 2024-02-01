@@ -1,5 +1,5 @@
-import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import axios from "axios";
 import { baseUrl } from "../config/baseUrl";
 
 export const AuthContext = createContext();
@@ -10,31 +10,32 @@ export const AuthContextProvider = ({ children }) => {
     );
 
     const signIn = async (username, password) => {
+        // 로그인 로직
         try {
             const response = await axios.post(
-              `${baseUrl}/api/auth/signIn`,
-              {
-                UserEmail: username,
-                Password: password,
-              },
-              {
-                withCredentials: true,
-              }
+                `${baseUrl}/api/auth/signIn`,
+                {
+                    UserEmail: username,
+                    Password: password,
+                },
+                {
+                    withCredentials: true,
+                }
             );
             setCurrentUser(response.data.userData);
-        
-          } catch (error) {
+        } catch (error) {
             throw error;
-          }
-  };
+        }
+    };
 
     const logout = async () => {
+        // 로그아웃 로직
         try {
             const response = await axios.get(`${baseUrl}/api/auth/logout`, { withCredentials: true });
             // console.log(response.data); // 서버에서 보내는 응답 확인
-          } catch (error) {
+        } catch (error) {
             console.error('로그아웃 중 오류:', error);
-          }
+        }
         setCurrentUser(null);
         window.location.href = "/";
     };

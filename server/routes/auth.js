@@ -343,49 +343,22 @@ router.get("/duplication-email", async (req, res) => {
   }
 });
 
-router.get("/kakao", (req, res) => {
-  // 사용자를 Kakao의 인증 엔드포인트로 리다이렉션
-  const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-  res.redirect(kakaoAuthUrl);
-});
+router.post('/kakao/callback', async function(req, res) {
+  const access_token = req.body.idToken;
+  console.log("access_token", access_token);
+  let UserEmail = "";
+  let Password = "";
+  let UserName = "";
+  let UserCellPhone = "";
+  let UserNickname = "";
+  let ProfileImage = "";
 
-router.get("/kakao/callback", async (req, res) => {
-  try {
-    const { code } = req.query;
-    console.log("kakao code", code);
-    
-    let UserEmail = "";
-    let UserName = "";
-    let UserCellPhone = "";
-    let UserNickname = "";
-    let Password = "";
-    let PasswordCheck = "";
-
-    const tokenUrl = "https://kauth.kakao.com/oauth/token";
-    const params = {
-      grant_type: "authorization_code",
-      client_id: KAKAO_CLIENT_ID,
-      client_secret: KAKAO_CLIENT_SECRET,
-      redirect_uri: REDIRECT_URI,
-      code,
-    };
-
-    const response = await axios.post(tokenUrl, qs.stringify(params), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    console.log("response", response.data);
-
-    const accessToken = response.data.access_token;
-    console.log("accessToken11: ", accessToken);
-    
-
-    if (accessToken != null && accessToken) {
-      const profileUrl = "https://kapi.kakao.com/v2/user/me";
+  if (access_token != null && access_token) {
+    const profileUrl = "https://kapi.kakao.com/v2/user/me";
+    try {
       const profileResponse = await axios.get(profileUrl, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${access_token}`,
         },
       });
 
@@ -400,118 +373,66 @@ router.get("/kakao/callback", async (req, res) => {
           ""
         );
       UserNickname = profileResponse.data.kakao_account.profile.nickname;
-    }
+      ProfileImage = profileResponse.data.kakao_account.profile.profile_image_url;
 
-    mysql.getConnection((error, conn) => {
-      if (error) {
-        console.log(error);
-        res.status(500).json({ error: "내부 서버 오류" });
-        return;
-      }
+      mysql.getConnection((error, conn) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ error: "내부 서버 오류" });
+          return;
+        }
 
-      conn.query(
-        "SELECT UserEmail FROM users WHERE UserEmail = ?",
-        [UserEmail],
-        async (err, result) => {
-          console.log("result12", result);
-          if (err) {
-            console.log(err);
-            // res.status(500).json({ error: "내부 서버 오류" });
-            return;
-          }
-
-          if (result.length === 0) {
-            try {
-              await axios.post("http://localhost:4000/api/auth/kakaologin", {
-                UserEmail,
-                UserName,
-                UserCellPhone,
-                UserNickname,
-                Password,
-              });
-              console.log("회원가입 시킴");
-            } catch (error) {
-              console.error("Kakao 로그인 오류:", error);
-              // res.status(500).send("Kakao 로그인 중 오류가 발생했습니다.");
+        conn.query(
+          "SELECT UserEmail, Password FROM users WHERE UserEmail = ?",
+          [UserEmail],
+          async (err, result) => {
+            console.log("result12", result);
+            if (err) {
+              console.log(err);
+              // res.status(500).json({ error: "내부 서버 오류" });
               return;
             }
-          }
 
-          try {
-            console.log("Before signIn call");
-            await axios.post("http://localhost:4000/api/auth/signIn", {
+            if (result.length === 0) {
+              // 비밀번호 해싱
+              const hashedPassword = await bcrypt.hash(Password, 10);
+              console.log("hashedPassword", hashedPassword);
+
+              conn.query(
+                "INSERT INTO users (UserEmail, UserName, UserCellPhone, Password, ProfileImage, UserNickname) VALUES (?, ?, ?, ?, ?, ?)",
+                [UserEmail, UserName, UserCellPhone, hashedPassword, ProfileImage, Password],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    // res.status(500).json({ error: "내부 서버 오류" });
+                    return;
+                  }
+                }
+              );
+            }
+            res.send({
               UserEmail,
               Password,
             });
-            console.log("After signIn call");
-          } catch (error) {
-            console.log("error: ", error);
+
+            conn.release();
           }
-          // res.redirect(`http://localhost:3000/`);
-
-
-        }
-      );
-    });
-  } catch (error) {
-    console.error("Kakao 로그인 오류:", error);
-    res.status(500).send("Kakao 로그인 중 오류가 발생했습니다.");
+        );
+      });
+    } catch (error) {
+      console.error("프로필 요청 중 에러 발생:", error);
+      res.status(500).send("프로필 요청 중에 오류가 발생했습니다.");
+    }
+  } else {
+    console.error("액세스 토큰이 없습니다.");
+    res.status(400).send("액세스 토큰이 없습니다.");
   }
 });
 
-// router.post('/kakao', async (req, res) => {
-//   try{
-//     let userEmail = "";
-//     let userNickName = "";
-//     console.log("1")
-//     console.log("req.body.access_token", req.body.access_token)
-//     if (req.body.access_token) {
-//     //초기 로그인
-//       // const result = await kakaoAuth.getProfile(req.body.access_token);
-//       const result = await kakaoAuth.getProfile(req.body.access_token);
-//       const kakaoUser = JSON.parse(result).kakao_account;
-//       userEmail = kakaoUser.email;
-//       userNickName = kakaoUser.profile.nickname;
-//     } else {
-//     //자동 로그인
-//       const user = jwt.verify(req.headers.authorization, process.env.JWT_SECRET, {
-//         ignoreExpiration: true,
-//       });
-//       userEmail = user.email;
-//     }
 
-//     const [user, created] = await User.findOrCreate({
-//       where: { email: userEmail },
-//       defaults: {
-//         socialType: 'kakao',
-//         nickName: userNickName,
-//         kakaoToken: req.body.access_token
-//       },
-//       attributes: ['id', 'nickName'],
-//     });
 
-//     let responseData = {
-//       success: true,
-//       user,
-//     };
 
-//     if (req.body.access_token) {
-//       const token = jwt.sign({
-//         id: user.id,
-//         email: userEmail,
-//       }, process.env.JWT_SECRET, {
-//         issuer: 'bbangsoon',
-//       });
-//       responseData.jwt = token;
-//     }
 
-//     return res.status(created? 201: 200).json(responseData);
-//   } catch (err) {
-//     return res.status(500).json({
-//       success: false,
-//       error: err.toString(),
-//     });
-//   }
-// });
+
 
 module.exports = router;

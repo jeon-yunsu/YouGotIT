@@ -1,39 +1,45 @@
-import React, { useState, useContext } from "react";
-import { signIn } from "../../../apis/authApi.tsx";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
 import Logo from "../../../img/YouGotITLogo2.png";
 import { AuthContext } from "../../../context/authContext.js";
 import axios from "axios";
 import { baseUrl } from "../../../config/baseUrl.js";
+import KakaoLogin from "react-kakao-login";
 
 const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [resistrationType, setRegistrationType] = useState(0);
-
   const { signIn } = useContext(AuthContext);
+  const kakaoClientId = "c2065d78a684dbcfaac5433fba1befe3";
+
+  useEffect(() => {
+    if (username && password) {
+      signIn(username, password);
+      closeModal();
+    }
+  }, [username, password]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-  
+
     try {
       await signIn(username, password);
-  
+
       closeModal();
       window.location.reload();
     } catch (error) {
-      console.error('인증 중 오류:', error);
-  
-      // 에러 메시지에 따라 다른 알림을 사용자에게 보여줄 수 있습니다.
+      console.error("인증 중 오류:", error);
+
       if (error.response && error.response.data) {
-        const errorMessage = error.response.data.error || '로그인 중 오류가 발생했습니다.';
+        const errorMessage =
+          error.response.data.error || "로그인 중 오류가 발생했습니다.";
         alert(errorMessage);
       } else {
-        alert('로그인 중 오류가 발생했습니다.');
+        alert("로그인 중 오류가 발생했습니다.");
       }
     }
-};
+  };
 
   const onKakaoLoginButtonClick = async () => {
     try {
@@ -41,7 +47,36 @@ const SignIn = ({ closeModal }) => {
     } catch (error) {
       console.log("error: ", error);
     }
-  }  
+  };
+
+  const kakaoOnSuccess = async (data) => {
+    console.log(data);
+    const idToken = data.response.access_token;
+
+    if (idToken) {
+      try {
+        const response = await axios.post(
+          `${baseUrl}/api/auth/kakao/callback`,
+          {
+            idToken,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        console.log("response.data12: ", response.data);
+        setUsername(response.data.UserEmail);
+        setPassword(response.data.Password);
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    }
+  };
+
+  const kakaoOnFailure = (error) => {
+    console.log(error);
+  };
 
   return (
     <div className="auth-signin">
@@ -72,10 +107,11 @@ const SignIn = ({ closeModal }) => {
           <button className="signin-button" type="submit">
             로그인
           </button>
-          <button className="social-login" type="button" onClick={onKakaoLoginButtonClick}>
-            카카오톡 로그인
-          </button>
-          {/* <a href="https://kauth.kakao.com/oauth/authorize?client_id=ef6faaebf1f7bc18e09f76bde177053d&redirect_uri=http://localhost:4000/api/auth/kakao/callback&response_type=code">카카오 로그인</a> */}
+          <KakaoLogin
+            token={kakaoClientId}
+            onSuccess={kakaoOnSuccess}
+            onFail={kakaoOnFailure}
+          />
         </div>
       </form>
     </div>
