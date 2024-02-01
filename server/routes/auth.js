@@ -172,12 +172,15 @@ router.post("/signIn", async (req, res) => {
           console.log("hashedPassword", hashedPassword);
 
           if (bcrypt.compareSync(password, hashedPassword)) {
+            console.log("토큰 ㅇㅅㅇ");
             const token = jwt.sign({ userID: result[0].UserID }, key, {
               expiresIn: "2h",
             });
 
+            console.log("token", token);
+
             // 토큰을 쿠키에 저장
-            res.cookie("userToken", token);
+            res.cookie("userToken", token, { secure: false });
 
             // 비밀번호를 제외한 사용자 정보만 응답으로 보냄
             const userData = {
@@ -341,16 +344,16 @@ router.get("/duplication-email", async (req, res) => {
 });
 
 router.get("/kakao", (req, res) => {
-  // 사용자를 Kakao의 인증 엔드포인트로 리다이렉션합니다.
+  // 사용자를 Kakao의 인증 엔드포인트로 리다이렉션
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   res.redirect(kakaoAuthUrl);
 });
 
-
 router.get("/kakao/callback", async (req, res) => {
   try {
     const { code } = req.query;
-    const registerationType = 1;
+    console.log("kakao code", code);
+    
     let UserEmail = "";
     let UserName = "";
     let UserCellPhone = "";
@@ -372,8 +375,11 @@ router.get("/kakao/callback", async (req, res) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+    console.log("response", response.data);
 
     const accessToken = response.data.access_token;
+    console.log("accessToken11: ", accessToken);
+    
 
     if (accessToken != null && accessToken) {
       const profileUrl = "https://kapi.kakao.com/v2/user/me";
@@ -394,16 +400,64 @@ router.get("/kakao/callback", async (req, res) => {
           ""
         );
       UserNickname = profileResponse.data.kakao_account.profile.nickname;
-
-    } else {
-      return res.redirect("http://localhost:3000");
     }
+
+    mysql.getConnection((error, conn) => {
+      if (error) {
+        console.log(error);
+        res.status(500).json({ error: "내부 서버 오류" });
+        return;
+      }
+
+      conn.query(
+        "SELECT UserEmail FROM users WHERE UserEmail = ?",
+        [UserEmail],
+        async (err, result) => {
+          console.log("result12", result);
+          if (err) {
+            console.log(err);
+            // res.status(500).json({ error: "내부 서버 오류" });
+            return;
+          }
+
+          if (result.length === 0) {
+            try {
+              await axios.post("http://localhost:4000/api/auth/kakaologin", {
+                UserEmail,
+                UserName,
+                UserCellPhone,
+                UserNickname,
+                Password,
+              });
+              console.log("회원가입 시킴");
+            } catch (error) {
+              console.error("Kakao 로그인 오류:", error);
+              // res.status(500).send("Kakao 로그인 중 오류가 발생했습니다.");
+              return;
+            }
+          }
+
+          try {
+            console.log("Before signIn call");
+            await axios.post("http://localhost:4000/api/auth/signIn", {
+              UserEmail,
+              Password,
+            });
+            console.log("After signIn call");
+          } catch (error) {
+            console.log("error: ", error);
+          }
+          // res.redirect(`http://localhost:3000/`);
+
+
+        }
+      );
+    });
   } catch (error) {
     console.error("Kakao 로그인 오류:", error);
-    return res.status(500).send("Kakao 로그인 중 오류가 발생했습니다.");
+    res.status(500).send("Kakao 로그인 중 오류가 발생했습니다.");
   }
 });
-
 
 // router.post('/kakao', async (req, res) => {
 //   try{

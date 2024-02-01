@@ -36,7 +36,6 @@ const SignIn = ({ closeModal }) => {
 };
 
   const onKakaoLoginButtonClick = async () => {
-    setRegistrationType(1);
     try {
       window.location.href = `${baseUrl}/api/auth/kakao`;
     } catch (error) {
@@ -76,7 +75,7 @@ const SignIn = ({ closeModal }) => {
           <button className="social-login" type="button" onClick={onKakaoLoginButtonClick}>
             카카오톡 로그인
           </button>
-          {/* <a href="https://kauth.kakao.com/oauth/authorize?client_id=e37ec34685cf29a9699570d6a7a74c24&redirect_uri=http://localhost:3000/auth/kakao/callback&response_type=code">카카오 로그인</a> */}
+          {/* <a href="https://kauth.kakao.com/oauth/authorize?client_id=ef6faaebf1f7bc18e09f76bde177053d&redirect_uri=http://localhost:4000/api/auth/kakao/callback&response_type=code">카카오 로그인</a> */}
         </div>
       </form>
     </div>
