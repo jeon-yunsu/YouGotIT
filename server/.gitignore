@@ -1,3 +1,6 @@
 node_modules/
 config/
-YouGotIT/server/.env
+.environment
+YouGotIT/server/.env/
+/Users/jeon-yunsu/Documents/vscode-workspace/YouGotIT/server/.env/
+/server/.env
