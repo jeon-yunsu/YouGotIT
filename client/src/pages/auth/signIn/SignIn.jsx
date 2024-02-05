@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
 import "./style.scss";
 import Logo from "../../../img/YouGotITLogo2.png";
 import { AuthContext } from "../../../context/authContext.js";
@@ -11,14 +10,10 @@ const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { signIn } = useContext(AuthContext);
-  const kakaoClientId = "c2065d78a684dbcfaac5433fba1befe3";
 
-  useEffect(() => {
-    if (username && password) {
-      signIn(username, password);
-      closeModal();
-    }
-  }, [username, password]);
+  //JavaScript KEY
+  const kakaoClientId = process.env.REACT_APP_KAKAO_CLIENT_ID;
+  // console.log("Kakao client", kakaoClientId)
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -41,14 +36,6 @@ const SignIn = ({ closeModal }) => {
     }
   };
 
-  const onKakaoLoginButtonClick = async () => {
-    try {
-      window.location.href = `${baseUrl}/api/auth/kakao`;
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-
   const kakaoOnSuccess = async (data) => {
     console.log(data);
     const idToken = data.response.access_token;
@@ -66,8 +53,9 @@ const SignIn = ({ closeModal }) => {
         );
 
         console.log("response.data12: ", response.data);
-        setUsername(response.data.UserEmail);
-        setPassword(response.data.Password);
+
+        signIn(response.data.UserEmail, response.data.Password);
+        closeModal();
       } catch (error) {
         console.log("error: ", error);
       }
@@ -75,7 +63,7 @@ const SignIn = ({ closeModal }) => {
   };
 
   const kakaoOnFailure = (error) => {
-    console.log(error);
+    window.location.href='http://localhost:3000';
   };
 
   return (
@@ -111,6 +99,15 @@ const SignIn = ({ closeModal }) => {
             token={kakaoClientId}
             onSuccess={kakaoOnSuccess}
             onFail={kakaoOnFailure}
+            style={{
+              width: "80%",
+              padding: "10px",
+              backgroundColor: "#fae100",
+              color: "black",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
           />
         </div>
       </form>

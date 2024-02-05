@@ -6,72 +6,7 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const qs = require("qs");
-
-
 router.use(bodyParser.json());
-
-const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
-const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-
-//카카오 회원가입
-router.post("/kakaologin", (req, res) => {
-  const email = req.body.UserEmail;
-  const name = req.body.UserName;
-  const password = req.body.Password;
-  const phoneNumber = req.body.UserCellPhone;
-  const nickName = req.body.UserNickname;
-
-  // console.log(
-  //   email +
-  //     " " +
-  //     name +
-  //     " " +
-  //     password +
-  //     " " +
-  //     passwordCheck +
-  //     " " +
-  //     phoneNumber +
-  //     " " +
-  //     nickName
-  // );
-
-  // if (password !== passwordCheck) {
-  //   console.log("비밀번호가 일치하지 않습니다.");
-  //   res.redirect("/signUp");
-  // }
-
-  //패스워드 암호화
-  bcrypt.hash(password, 10, (err, hashedPassword) => {
-    if (err) {
-      // console.log(err);
-      return;
-    }
-
-    mysql.getConnection((error, conn) => {
-      console.log("Connection success");
-
-      if (error) {
-        // console.log(error);
-        return;
-      }
-
-      conn.query(
-        "INSERT INTO Users(UserEmail, UserName, Password, UserCellPhone, UserNickname) VALUES(?,?,?,?,?);",
-        [email, name, hashedPassword, phoneNumber, nickName],
-        (err, result) => {
-          if (err) {
-            // console.log(err);
-            return;
-          }
-          res.json(result);
-        }
-      );
-      conn.release();
-    });
-  });
-  res.redirect("/");
-});
 
 //일반 회원가입
 router.post("/signUp", (req, res) => {
@@ -153,7 +88,7 @@ router.post("/signIn", async (req, res) => {
         "SELECT u.UserID, u.UserEmail, u.UserName, u.ProfileImage, u.Password FROM Users u WHERE u.UserEmail = ?",
         [email],
         (err, result) => {
-          console.log("result", result);
+          // console.log("result", result);
           if (err) {
             console.log(err);
             res.status(500).json({ error: "내부 서버 오류" });
@@ -167,12 +102,12 @@ router.post("/signIn", async (req, res) => {
           }
 
           const hashedPassword = result[0].Password;
-          console.log("hashedPassword", hashedPassword);
+          // console.log("hashedPassword", hashedPassword);
 
           if (bcrypt.compareSync(password, hashedPassword)) {
-            console.log("토큰 ㅇㅅㅇ");
+            // console.log("토큰 ㅇㅅㅇ");
             const token = jwt.sign({ userID: result[0].UserID }, key, {
-              expiresIn: "2h",
+              expiresIn: "100y",
             });
 
             console.log("token", token);
@@ -384,25 +319,25 @@ router.post('/kakao/callback', async function(req, res) {
           "SELECT UserEmail, Password FROM users WHERE UserEmail = ?",
           [UserEmail],
           async (err, result) => {
-            console.log("result12", result);
+            // console.log("result12", result);
             if (err) {
               console.log(err);
-              // res.status(500).json({ error: "내부 서버 오류" });
+              res.status(500).json({ error: "내부 서버 오류" });
               return;
             }
 
             if (result.length === 0) {
               // 비밀번호 해싱
               const hashedPassword = await bcrypt.hash(Password, 10);
-              console.log("hashedPassword", hashedPassword);
+              // console.log("hashedPassword", hashedPassword);
 
               conn.query(
                 "INSERT INTO users (UserEmail, UserName, UserCellPhone, Password, ProfileImage, UserNickname) VALUES (?, ?, ?, ?, ?, ?)",
-                [UserEmail, UserName, UserCellPhone, hashedPassword, ProfileImage, Password],
+                [UserEmail, UserName, UserCellPhone, hashedPassword, ProfileImage, UserNickname],
                 (err, result) => {
                   if (err) {
                     console.log(err);
-                    // res.status(500).json({ error: "내부 서버 오류" });
+                    res.status(500).json({ error: "내부 서버 오류" });
                     return;
                   }
                 }

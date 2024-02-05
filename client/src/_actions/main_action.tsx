@@ -3,7 +3,7 @@ import axios from "axios";
 import { baseUrl } from "../config/baseUrl.js";
 import jsCookie from "js-cookie";
 
-export const MainAPI = async () => {
+export const main = async () => {
   try {
     const token = jsCookie.get("userToken");
     const response = await axios.get(`${baseUrl}/`, {

@@ -411,11 +411,11 @@ const SignUp = () => {
               <img src={Kakao} alt="" />
             </button>
           </div>
-          <div className="social-button-wrapper">
+          {/* <div className="social-button-wrapper">
             <button className="google-login">
               <img className="google-logo" src={Google} alt="" />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

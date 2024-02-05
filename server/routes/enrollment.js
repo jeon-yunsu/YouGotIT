@@ -70,7 +70,7 @@ router.post('/', (req, res) => {
       // SQL 쿼리 실행 (Prepared Statement 사용)
       const query = `
         INSERT INTO Enrollments (UserID, LectureID, EnrollmentDate, AttendanceRate, PaymentStatus)
-        VALUES (?, ?, NOW(), 0, 0);
+        VALUES (?, ?, NOW(), 0, 1);
       `;
       
       conn.query(query, [userId, lectureId], (error, results) => {

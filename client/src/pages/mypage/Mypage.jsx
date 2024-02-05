@@ -5,7 +5,7 @@ import './style.scss';
 import Profile from './profile/profile';
 import MyCourse from './mycourse/MyCourse';
 import Cart from './cart/Cart';
-import Payment from './payment/Payment';
+import PaymentList from './paymentList/PaymentList';
 
 const Mypage = () => {
   const [selectedItem, setSelectedItem] = useState('프로필');
@@ -36,7 +36,7 @@ const Mypage = () => {
         {selectedItem === '프로필' && <Profile />}
         {selectedItem === '수강중인 강의' && <MyCourse />}
         {selectedItem === '장바구니' && <Cart />}
-        {selectedItem === '결제내역' && <Payment />}
+        {selectedItem === '결제내역' && <PaymentList />}
       </div>
     </div>
   );

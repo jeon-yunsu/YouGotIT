@@ -10,7 +10,7 @@ export const AuthContextProvider = ({ children }) => {
     );
 
     const signIn = async (username, password) => {
-        // 로그인 로직
+
         try {
             const response = await axios.post(
                 `${baseUrl}/api/auth/signIn`,

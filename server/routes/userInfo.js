@@ -6,59 +6,64 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
 const verifyTokenAndGetUserId = require("../middleware/verifyTokenAndGetUserId");
+const {VerificationToken} = require('../middleware/VerificationToken');
 
-// 사용자 정보 가져오기(메인페이지)
-router.get("/home", function (req, res) {
-  const userId = verifyTokenAndGetUserId(req, res);
+// // 사용자 정보 가져오기(메인페이지)
+// router.get("/home", VerificationToken, function (req, res) {
+//   const userId = verifyTokenAndGetUserId(req, res);
 
-  if (!userId) {
-    res.status(400).send("User ID not found in headers");
-    return;
-  }
+//   if (!userId) {
+//     res.status(400).send("User ID not found in headers");
+//     return;
+//   }
 
-  // MySQL 연결
-  mysql.getConnection((error, conn) => {
-    if (error) {
-      console.error(error);
-      return res.status(500).json({
-        status: "error",
-        message: "Internal Server Error",
-      });
-    }
+//   // MySQL 연결
+//   mysql.getConnection((error, conn) => {
+//     if (error) {
+//       console.error(error);
+//       return res.status(500).json({
+//         status: "error",
+//         message: "Internal Server Error",
+//       });
+//     }
 
-    const userInfoQuery = `
-        SELECT
-          u.UserID,
-          u.UserEmail,
-          u.UserNickname,
-          u.ProfileImage
-        FROM 
-          Users u
-        WHERE 
-          u.UserID = '${userId}';
-      `;
+//     const userInfoQuery = `
+//         SELECT
+//           u.UserID,
+//           u.UserEmail,
+//           u.UserNickname,
+//           u.ProfileImage
+//         FROM 
+//           Users u
+//         WHERE 
+//           u.UserID = '${userId}';
+//       `;
 
-    conn.query(userInfoQuery, (error, userInfo) => {
-      // MySQL 연결 종료
-      conn.release();
+//     conn.query(userInfoQuery, (error, userInfo) => {
+//       // MySQL 연결 종료
+//       conn.release();
 
-      if (error) {
-        console.error(error);
-        return res.status(500).json({
-          status: "error",
-          message: "Error fetching user info",
-          error: error.message,
-        });
-      }
-      const user = userInfo[0];
-      res.json(user);
-      console.log("user:  " + JSON.stringify(user));
-    });
-  });
+//       if (error) {
+//         console.error(error);
+//         return res.status(500).json({
+//           status: "error",
+//           message: "Error fetching user info",
+//           error: error.message,
+//         });
+//       }
+//       const user = userInfo[0];
+//       res.json(user);
+//       console.log("user:  " + JSON.stringify(user));
+//     });
+//   });
+// });
+router.get("/home", VerificationToken, (req, res) => {
+  console.log("Home");
 });
 
+
 // 사용자 정보 가져오기(마이페이지)
-router.get("/mypage", (req, res) => {
+router.get("/mypage",VerificationToken, (req, res) => {
   const userId = verifyTokenAndGetUserId(req, res);
 
   if (!userId) {
@@ -90,7 +95,7 @@ router.get("/mypage", (req, res) => {
     `;
 
     conn.query(query, (error, results) => {
-      // console.log(results);
+      console.log("마이페이지", results);
       if (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");

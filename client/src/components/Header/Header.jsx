@@ -26,7 +26,7 @@ const Header = () => {
     
     setIsLoggedIn(!!token);
 
-    const fetchData = async () => {
+    const categoryData = async () => {
       
       try {
         const response = await axios.get(`${baseUrl}/api/categories/all`, {
@@ -37,7 +37,7 @@ const Header = () => {
         console.error("강의 정보를 불러오는 중 오류 발생:", error);
       }
     };
-    fetchData();
+    categoryData();
   }, [isLoggedIn, currentUser]);
 
   const toggleDropdown = () => {

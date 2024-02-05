@@ -16,7 +16,7 @@ import Search from "./pages/search/Search" //검색
 import Profile from "./pages/mypage/profile/profile" //프로필
 
 import Cart from "./pages/mypage/cart/Cart"; //장바구니
-import Payment from "./pages/mypage/payment/Payment" //결제내역
+import PaymentList from "./pages/mypage/paymentList/PaymentList" //결제내역
 import Mypage from "./pages/mypage/Mypage"; //마이페이지
 import Lecture from "./pages/lecture/Lecture";
 import WatchLecture from "./pages/watchLecture/WatchLecture";
@@ -86,8 +86,8 @@ const router = createBrowserRouter([
         element: <Cart />
       },
       {
-        path: "/payment",
-        element: <Payment />
+        path: "/paymentList",
+        element: <PaymentList />
       },
       {
         path: "/signUp",

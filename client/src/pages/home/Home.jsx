@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./style.scss";
 import Banner from "../../img/banner.png";
 import { useNavigate } from "react-router-dom";
-import { MainAPI } from "../../apis/mainApi.tsx";
+import { main } from "../../_actions/main_action.tsx";
 
 const StarRatings = ({ rating }) => {
   const ratingToPercent = () => {
@@ -42,7 +42,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         // 서버에서 데이터 가져오기
-        const response = await MainAPI();
+        const response = await main();
         if (response && response.data) { // response.data가 존재하는지 확인
           
           // 데이터를 상태에 설정

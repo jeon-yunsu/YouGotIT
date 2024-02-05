@@ -95,32 +95,37 @@ router.get("/cartlist", (req, res) => {
 
 //장바구니 삭제
 router.post("/delete-lecture", async (req, res) => {
-  const lectureId = req.body.LectureID;
-  // console.log("lectureId111:  ",lectureId)
+  const userId = verifyTokenAndGetUserId(req, res);
+  const lectureId = req.body.lectureId;
+
+  console.log("lectureId12", lectureId);
+  console.log("userId12", userId);
 
   mysql.getConnection((error, conn) => {
-      if (error) {
-          res.status(500).send("Internal Server Error");
-          return;
+    if (error) {
+      res.status(500).send("내부 서버 오류");
+      return;
+    }
+
+    conn.query(
+      "DELETE FROM Cart WHERE LectureID = ? AND UserID = ?;",
+      [lectureId, userId],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("내부 서버 오류");
+        } else {
+          res.status(200).send("삭제 성공");
+        }
+
+        // 쿼리 완료 후 연결 해제
+        conn.release();
       }
-
-      conn.query(
-          "DELETE FROM Cart WHERE LectureID = ?;",
-          [lectureId],
-          (err, result) => {
-              if (err) {
-                  console.error(err);
-                  res.status(500).send("Internal Server Error");
-              } else {
-                  res.status(200).send("Delete successfully");
-              }
-
-              // 쿼리 완료 후 연결 해제
-              conn.release();
-          }
-      );
+    );
   });
 });
+
+
 
 // 해당 강의가 장바구니에 담겨있는지 확인
 router.get("/cartlist/check", (req, res) => {

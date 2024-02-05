@@ -12,7 +12,7 @@ const StarRatings = ({ rating }) => {
     const score = +rating * 20;
     return score + 1.5;
   };
-  //수강 여부에 따라 수강하기/이어서 학습하기 버튼 출력
+
   return (
     <div className="star-ratings">
       <div
@@ -187,10 +187,53 @@ const Lecture = () => {
       alert("로그인 후 이용해 주세요.");
     } else {
       try {
+        // 서버로부터 강의 정보 가져오기
+        const response = await axios.get(
+          `${baseUrl}/api/lecture/${lectureID}`,
+          {
+            withCredentials: true,
+          }
+        );
+        const lectureData = response.data.lecture;
+        console.log(currentUser);
+  
+        // 서버로 결제 요청 데이터 만들기
+        const paymentData = {
+          pg: `${process.env.REACT_APP_PAYMENT_PG}`, // PG사
+          pay_method: "card", // 결제수단
+          merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
+          amount: lectureData[0].LecturePrice, // 결제금액
+          name: lectureData[0].LectureTitle, // 주문명
+          buyer_name: currentUser.UserName, // 구매자 이름
+          // buyer_tel: currentUser.UserCellPhone, // 구매자 전화번호
+          buyer_email: currentUser.UserEmail, // 구매자 이메일
+        };
+
+        console.log("paymentData", paymentData);
+  
+        // IMP SDK 초기화
+        const { IMP } = window;
+        IMP.init(`${process.env.REACT_APP_IMP}`);
+  
+        // 결제 요청
+        IMP.request_pay(paymentData, callback);
+      } catch (error) {
+        console.error("API 호출 중 오류:", error);
+        alert("결제 요청 중 오류가 발생했습니다.");
+      }
+    }
+  };
+  
+  const callback = async (response) => {
+    const { success, error_msg } = response;
+    if (success) {
+      try {
         const token = jsCookie.get("userToken");
-        await axios.post(
+  
+        // 서버로 수강 등록 요청
+        const enrollmentResponse = await axios.post(
           `${baseUrl}/api/enrollment`,
-          { lectureId: lectureID }, // 수정된 부분
+          { lectureId: lectureID },
           {
             withCredentials: true,
             headers: {
@@ -199,14 +242,49 @@ const Lecture = () => {
           }
         );
 
-        // 결제하기
-
-        setIsEnrollment(true);
+        const paymentResponse = await axios.post(
+          `${baseUrl}/api/modify`,
+          {lectureId: lectureID},
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        
+        const cartResponse = await axios.post(
+          `${baseUrl}/api/cart/delete-lecture`,
+          {lectureId: lectureID},
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        console.log("enrollmentResponse.data.success?", enrollmentResponse.data)
+        console.log("paymentResponse.data.success?", paymentResponse.data);
+        console.log("cartResponse.data", cartResponse.data)
+  
+        // 수강 등록이 성공한 경우
+        if (enrollmentResponse.data === "강의 수강 신청이 완료되었습니다." && paymentResponse.data.success && cartResponse.data === "삭제 성공") {
+          alert("수강 등록 및 결제가 성공했습니다.");
+          
+          window.location.reload();
+        } else {
+          // 수강 등록이 실패한 경우에 대한 처리
+          alert("수강 등록에 실패했습니다.");
+        }
       } catch (error) {
         console.error("API 호출 중 오류:", error);
+        alert("수강 등록 중 오류가 발생했습니다.");
       }
+    } else {
+      alert(`결제 실패: ${error_msg}`);
     }
   };
+  
 
   const addToCartHandler = async () => {
     if (!currentUser) {
@@ -250,9 +328,9 @@ const Lecture = () => {
     } else if (!isEnrollment) {
       alert("수강 후 수강평을 등록할 수 있습니다.");
     }
-  
+
     const token = jsCookie.get("userToken");
-  
+
     try {
       await axios.post(
         `${baseUrl}/api/lecture/add-review`,
@@ -268,22 +346,18 @@ const Lecture = () => {
           },
         }
       );
-        
+
       setCommentContent("");
       setCommentRating("");
-      const response = await axios.get(
-        `${baseUrl}/api/lecture/${lectureID}`,
-        {
-          withCredentials: true,
-        }
-      );
-  
+      const response = await axios.get(`${baseUrl}/api/lecture/${lectureID}`, {
+        withCredentials: true,
+      });
+
       setCommentData(response.data.comments);
     } catch (error) {
       console.error("API 호출 중 오류:", error);
     }
   };
-  
 
   const handleTextareaChange = (event) => {
     setCommentContent(event.target.value);
