@@ -45,7 +45,7 @@ const WatchLecture = () => {
     fetchData();
   }, []);
 
-  console.log(tocData);
+  console.log("tocData", tocData);
 
   const [course, setCourse] = useState({
     progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,

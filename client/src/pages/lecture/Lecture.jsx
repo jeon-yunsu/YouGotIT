@@ -213,7 +213,7 @@ const Lecture = () => {
   
         // IMP SDK 초기화
         const { IMP } = window;
-        IMP.init(`${process.env.REACT_APP_IMP}`);
+        IMP.init(`${process.env.REACT_APP_IMP_KG_INICIS}`);
   
         // 결제 요청
         IMP.request_pay(paymentData, callback);

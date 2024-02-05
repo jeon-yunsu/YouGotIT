@@ -415,7 +415,8 @@ router.get("/cours", (req, res) => {
         JOIN
             Lectures l ON e.LectureID = l.LectureID 
         WHERE 
-            u.UserID = '${userId}' AND e.PaymentStatus = TRUE;
+            u.UserID = '${userId}' AND e.PaymentStatus = TRUE
+        ORDER BY e.EnrollmentDate DESC;
       `;
 
     conn.query(query, [userId], (error, results) => {
