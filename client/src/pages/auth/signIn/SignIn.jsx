@@ -37,7 +37,7 @@ const SignIn = ({ closeModal }) => {
   };
 
   const kakaoOnSuccess = async (data) => {
-    console.log(data);
+    console.log("data", data);
     const idToken = data.response.access_token;
 
     if (idToken) {
@@ -63,7 +63,7 @@ const SignIn = ({ closeModal }) => {
   };
 
   const kakaoOnFailure = (error) => {
-    window.location.href='http://localhost:3000';
+    window.location.href = "http://localhost:3000";
   };
 
   return (

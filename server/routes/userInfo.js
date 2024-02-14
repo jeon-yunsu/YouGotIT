@@ -57,10 +57,6 @@ const {VerificationToken} = require('../middleware/VerificationToken');
 //     });
 //   });
 // });
-router.get("/home", VerificationToken, (req, res) => {
-  console.log("Home");
-});
-
 
 // 사용자 정보 가져오기(마이페이지)
 router.get("/mypage",VerificationToken, (req, res) => {
@@ -86,7 +82,7 @@ router.get("/mypage",VerificationToken, (req, res) => {
         u.UserEmail ,
         u.UserName, 
         u.ProfileImage, 
-        u.Introduction, 
+        u.Introduction,
         u.UserNickname
     FROM 
         Users u 

@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
         Lectures l
       JOIN
         Instructor i ON l.InstructorID = i.InstructorID
-      JOIN 
+      LEFT JOIN 
         Comments c ON l.LectureID = c.LectureID 
       GROUP BY
         l.LectureImageURL, l.LectureTitle, i.InstructorName, l.LecturePrice
@@ -54,7 +54,7 @@ router.get("/", (req, res) => {
         Lectures l
       JOIN
         Instructor i ON l.InstructorID = i.InstructorID
-      JOIN 
+      LEFT JOIN 
         Comments c ON l.LectureID = c.LectureID 
       GROUP BY
         l.LectureID, l.LectureImageURL, l.LectureTitle, i.InstructorName, l.LecturePrice, l.UploadDate

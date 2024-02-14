@@ -1,5 +1,4 @@
 //MySQL 커넥션 풀 생성 
-
 const dbconfig = require('../config/dbconfig.json');
 const mysql = require('mysql');
 
@@ -9,7 +8,7 @@ const conn = mysql.createPool({
     port: dbconfig.port,
     password: dbconfig.password, 
     database: dbconfig.database,
-    connectionLimit: 5 
+    connectionLimit: 5000 
 });
 
 module.exports = conn;

@@ -1,27 +1,32 @@
-// WatchLecture.jsx
-
-import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap CSS를 프로젝트에 추가해주세요
-import "./style.scss"; // 스타일 파일을 import
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./style.scss";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import DefaultImage from "../../img/banner.png";
 import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
 import jsCookie from "js-cookie";
+import VideoPlayer from "../../components/VideoPlayer/VideoPlayer.jsx";
 
 const WatchLecture = () => {
   const [tocData, setTocData] = useState([]);
-  const { lectureID } = useParams();
-  console.log(lectureID);
+  const { lectureID, TOCID } = useParams();
   const [selectedMenuTitle, setSelectedMenuTitle] = useState("");
-  const [currentTOCID, setCurrentTOCID] = useState(0);
+  const [currentTOCID, setCurrentTOCID] = useState("");
+  const [course, setCourse] = useState({
+    progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
+  });
+  // console.log(typeof TOCID); // 이 코드는 TOCID의 타입을 콘솔에 출력합니다.
+  // console.log("id확인", lectureID, TOCID);
+  // console.log("currentTOCID?", currentTOCID);
+  // console.log("tocdata", tocData);
 
   useEffect(() => {
+    setCurrentTOCID(TOCID);
     const fetchData = async () => {
       try {
         const token = jsCookie.get("userToken");
         const response = await axios.get(
-          `${baseUrl}/api/lecture/${lectureID}/watch/`,
+          `${baseUrl}/api/lecture/${lectureID}/watch`,
           {
             withCredentials: true,
             headers: {
@@ -30,12 +35,10 @@ const WatchLecture = () => {
           }
         );
         setTocData(response.data);
-        setCourse({
-          progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
-        });
         if (response.data.length > 0) {
-          setSelectedMenuTitle(response.data[1].Title);
-          setCurrentTOCID(response.data[1].TOCID);
+          setCourse({
+            progress: response.data[0].AttendanceRate || 0,
+          });
         }
       } catch (error) {
         console.error("강의 정보를 불러오는 중 오류 발생:", error);
@@ -43,13 +46,10 @@ const WatchLecture = () => {
     };
 
     fetchData();
-  }, []);
+  }, [TOCID]);
 
-  console.log("tocData", tocData);
-
-  const [course, setCourse] = useState({
-    progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
-  });
+  // console.log("tocData", tocData);
+  // console.log(course)
 
   const calculateProgressBarStyle = (progress) => {
     return {
@@ -59,16 +59,8 @@ const WatchLecture = () => {
 
   const handleMenuItemClick = (TOCID) => {
     setCurrentTOCID(TOCID);
-    console.log("currentTOCID: ", currentTOCID);
+    // console.log("currentTOCID: ", currentTOCID);
   };
-
-  const prevButtonClick = () => {
-    setCurrentTOCID(currentTOCID-1);
-  }
-
-  const nextButtonClick = () => {
-    setCurrentTOCID(currentTOCID+1);
-  }
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -102,12 +94,14 @@ const WatchLecture = () => {
                 {tocData[0].LectureTitle}
               </h1>
               <div className="progress-bar-container">
-                <div
-                  className="my-course-progress"
-                  style={calculateProgressBarStyle(course.progress)}
-                >
-                  {course.progress}%
-                </div>
+                {course.progress !== 0 && (
+                  <div
+                    className="my-course-progress"
+                    style={calculateProgressBarStyle(course.progress)}
+                  >
+                    {course.progress}%
+                  </div>
+                )}
               </div>
 
               <ul>
@@ -146,33 +140,21 @@ const WatchLecture = () => {
           <div className="row toc-container">
             <div className="col-10 toc-title">
               {tocData.length > 0 &&
-                tocData.find((item) => item.TOCID === currentTOCID)?.Title}
+                tocData.find((item) => item.TOCID == currentTOCID)?.Title}
             </div>
           </div>
           <div className="row">
             <div className="col-12">
-              <video
-                id="my-video"
-                className="video-js w-100"
-                controls
-                preload="auto"
-                poster="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg"
-                data-setup=""
-                loop
-              >
-                <source
-                  src="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-1080p.mp4"
-                  type="video/mp4"
+              {tocData.length > 0 && (
+                <VideoPlayer
+                  src={
+                    tocData.find((item) => item.TOCID == currentTOCID)
+                      ?.MaterialURL || ""
+                  }
+                  tocId={currentTOCID}
+                  lectureID={tocData[0].LectureID}
                 />
-              </video>
-            </div>
-          </div>
-          <div className="row my-4">
-            <div className="col-6 text-center">
-              <button className="btn btn-outline-secondary w-100" onClick={prevButtonClick}>Prev</button>
-            </div>
-            <div className="col-6 text-center">
-              <button className="btn btn-outline-secondary w-100" onClick={nextButtonClick}>Next</button>
+              )}
             </div>
           </div>
         </div>

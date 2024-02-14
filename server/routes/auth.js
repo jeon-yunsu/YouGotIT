@@ -6,6 +6,10 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const qs = require("qs");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const {VerificationToken} = require("../middleware/VerificationToken");
+
 router.use(bodyParser.json());
 
 //일반 회원가입
@@ -16,7 +20,8 @@ router.post("/signUp", (req, res) => {
   const passwordCheck = req.body.PasswordCheck;
   const phoneNumber = req.body.UserCellPhone;
   const nickName = req.body.UserNickname;
-
+  const profileImage = "http://localhost:4000/profileImage/B1BF1296-0DBB-46CB-8D01-C1B4700B37F8_1_105_c.jpeg"
+  const introduction = `안녕하세요 ${name} 입니다.`
   console.log(
     email +
       " " +
@@ -52,8 +57,8 @@ router.post("/signUp", (req, res) => {
       }
 
       conn.query(
-        "INSERT INTO Users(UserEmail, UserName, Password, UserCellPhone, UserNickname) VALUES(?,?,?,?,?);",
-        [email, name, hashedPassword, phoneNumber, nickName],
+        "INSERT INTO Users(UserEmail, UserName, Password, UserCellPhone, UserNickname, ProfileImage, Introduction) VALUES(?,?,?,?,?,?,?);",
+        [email, name, hashedPassword, phoneNumber, nickName, profileImage, introduction],
         (err, result) => {
           if (err) {
             console.log(err);
@@ -102,12 +107,12 @@ router.post("/signIn", async (req, res) => {
           }
 
           const hashedPassword = result[0].Password;
-          // console.log("hashedPassword", hashedPassword);
+          console.log("hashedPassword", hashedPassword);
 
           if (bcrypt.compareSync(password, hashedPassword)) {
             // console.log("토큰 ㅇㅅㅇ");
             const token = jwt.sign({ userID: result[0].UserID }, key, {
-              expiresIn: "100y",
+              // expiresIn: "3s",
             });
 
             console.log("token", token);
@@ -276,7 +281,7 @@ router.get("/duplication-email", async (req, res) => {
   }
 });
 
-router.post('/kakao/callback', async function(req, res) {
+router.post("/kakao/callback", async function (req, res) {
   const access_token = req.body.idToken;
   console.log("access_token", access_token);
   let UserEmail = "";
@@ -306,7 +311,8 @@ router.post('/kakao/callback', async function(req, res) {
           ""
         );
       UserNickname = profileResponse.data.kakao_account.profile.nickname;
-      ProfileImage = profileResponse.data.kakao_account.profile.profile_image_url;
+      ProfileImage =
+        profileResponse.data.kakao_account.profile.profile_image_url;
 
       mysql.getConnection((error, conn) => {
         if (error) {
@@ -333,7 +339,14 @@ router.post('/kakao/callback', async function(req, res) {
 
               conn.query(
                 "INSERT INTO users (UserEmail, UserName, UserCellPhone, Password, ProfileImage, UserNickname) VALUES (?, ?, ?, ?, ?, ?)",
-                [UserEmail, UserName, UserCellPhone, hashedPassword, ProfileImage, UserNickname],
+                [
+                  UserEmail,
+                  UserName,
+                  UserCellPhone,
+                  hashedPassword,
+                  ProfileImage,
+                  UserNickname,
+                ],
                 (err, result) => {
                   if (err) {
                     console.log(err);
@@ -362,10 +375,12 @@ router.post('/kakao/callback', async function(req, res) {
   }
 });
 
-
-
-
-
-
+router.get('/verifyToken',VerificationToken, async(req,res) => {
+  res.json({
+      success: true,
+      message: '토큰 유효성 확인 성공',
+      // 추가적인 정보를 응답에 포함할 수 있습니다.
+    });
+});
 
 module.exports = router;

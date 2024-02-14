@@ -10,8 +10,7 @@ import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
 
 const Header = () => {
-  const { currentUser, logout } = useContext(AuthContext);
-  // console.log("currentUser",currentUser)
+  const { currentUser, logout} = useContext(AuthContext);
 
   const navigate = useNavigate();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -23,21 +22,20 @@ const Header = () => {
 
   useEffect(() => {
     const token = jsCookie.get("userToken");
-    
     setIsLoggedIn(!!token);
 
-    const categoryData = async () => {
-      
+    const fetchCategoryData = async () => { // 카테고리 정보를 가져오는 함수 정의
       try {
         const response = await axios.get(`${baseUrl}/api/categories/all`, {
           withCredentials: true,
         });
         setCategoryData(response.data);
       } catch (error) {
-        console.error("강의 정보를 불러오는 중 오류 발생:", error);
+        console.error("카테고리 정보를 불러오는 중 오류 발생:", error);
       }
     };
-    categoryData();
+
+    fetchCategoryData();
   }, [isLoggedIn, currentUser]);
 
   const toggleDropdown = () => {
@@ -76,8 +74,17 @@ const Header = () => {
 
   const onSearchHandler = async (e) => {
     e.preventDefault();
+  
+    if (!searchWord || searchWord.trim().length < 2) {
+      // 검색어가 없거나 2글자 미만일 때 경고창 띄우기
+      alert("검색어는 2글자 이상이어야 합니다.");
+      return;
+    }
+  
     navigate("/search", { state: { searchWord: searchWord } });
   };
+  
+  
 
   const onCategoryHandler = async (categoryId, categoryName) => {
     navigate("/lectureList", {
@@ -99,7 +106,6 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        <div></div>
 
         <div className="drop-down">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
@@ -143,7 +149,7 @@ const Header = () => {
         <div className="links">
           {isLoggedIn ? (
             <>
-              <button
+              <div
                 className="profile"
                 onMouseEnter={toggleProfileDropdown}
                 onMouseLeave={closeProfileDropdown}
@@ -181,22 +187,13 @@ const Header = () => {
                     <Link to="/mypage" className="dropdown-item">
                       프로필 설정
                     </Link>
-                    {/* <Link to="/mycourse" className="dropdown-item">
-                      수강중인 강의
-                    </Link>
-                    <Link to="/cart" className="dropdown-item">
-                      장바구니
-                    </Link>
-                    <Link to="/payment" className="dropdown-item">
-                      결제내역
-                    </Link> */}
                     <hr className="dropdown-hr" />
                     <button className="dropdown-item" onClick={handleLogout}>
                       로그아웃
                     </button>
                   </div>
                 )}
-              </button>
+              </div>
             </>
           ) : (
             <>

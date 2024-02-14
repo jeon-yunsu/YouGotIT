@@ -51,25 +51,29 @@ router.get("/lectures/:categoryID", (req, res) => {
 
     // SQL 쿼리 실행
     const query = `
-        SELECT 
-          l.LectureID,
-          l.LectureImageURL,
-          l.LectureTitle,
-          AVG(c2.Rating) AS AverageRating,
-          l.LecturePrice 
-        FROM 
+      SELECT 
+        l.LectureID,
+        l.LectureImageURL,
+        l.LectureTitle,
+        IFNULL(AVG(c2.Rating), 0) AS AverageRating, 
+        l.LecturePrice ,
+        i.InstructorName
+      FROM 
           Lectures l
-        JOIN
+      JOIN
           LectureCategory lc ON l.LectureID = lc.LectureID
-        JOIN 
+      JOIN 
           Category c ON c.CategoryID = lc.CategoryID
-        JOIN 
-          Comments c2 ON c2.LectureID = l.LectureID
-        WHERE 
+      JOIN 
+          Instructor i ON i.InstructorID = l.InstructorID         
+      LEFT JOIN 
+          Comments c2 ON c2.LectureID = l.LectureID 
+      WHERE 
           lc.CategoryID = ?
-        GROUP BY 
+      GROUP BY 
           l.LectureID
-        ORDER BY AverageRating DESC ;
+      ORDER BY 
+          AverageRating DESC;
       `;
 
     conn.query(query, [categoryID], (error, results) => {

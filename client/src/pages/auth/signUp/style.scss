@@ -9,6 +9,7 @@
     color: red;
     font-size: 10px;
     margin: 0;
+    height: 10px;
   }
 
   .signup-message-slider {
@@ -49,8 +50,25 @@
     width: 300px;
     gap: 5px;
 
+    .form-input-block-container{
+      
+    }
+
     .form-input-block {
-      // margin-bottom: 10px;
+      // margin-bottom: 10px;\
+      position: relative;
+
+      button {
+        position: absolute;
+        width: 80px;
+        height: 48px;
+        // top: 50%; /* 상위 요소의 중앙으로부터 50% 떨어진 위치에 배치 */
+        margin: 0;
+        right: 0.5px;
+        bottom: 0px;
+        border-radius: 3px;
+        font-size: 11px;
+      }
 
       label {
         line-height: 1.43;
@@ -211,3 +229,6 @@ p {
 
     
 }
+
+
+

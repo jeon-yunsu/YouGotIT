@@ -18,7 +18,7 @@ const verifyTokenAndGetUserId = (req, res) => {
     }
   
     let userId;
-  
+
     try {
       // JWT 토큰을 해독하여 사용자 ID를 추출
       const decodedToken = jwt.verify(token, key);

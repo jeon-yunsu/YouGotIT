@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Kakao from "../../../img/kakaologo.png";
 import Google from "../../../img/googlelogo.png";
 import "./style.scss";
+import { AuthContext } from "../../../context/authContext.js";
 import axios from "axios";
 import { baseUrl } from "../../../config/baseUrl";
+import KakaoLogin from "react-kakao-login";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -21,6 +23,10 @@ const SignUp = () => {
   const [nameError, setNameError] = useState("");
   const [cellphoneError, setCellPhoneError] = useState("");
   const [privacyAgree, setPrivacyAgree] = useState("");
+  const [emailCertification, setEmailCertification] = useState(false);
+  const [showEmailInputBox, setShowEmailInputBox] = useState(false);
+  const [emailDBToken, setEmailDBToken] = useState("");
+  const [emailInputToken, setEmailInputToken] = useState("");
   const messages = [
     "나의 성장을 돕는 IT 실무 지식 플랫폼",
     "성장에 목마를 때, You Got IT",
@@ -28,9 +34,40 @@ const SignUp = () => {
     "You Got IT에서 가치를 높이세요",
     "You Got IT에서 다양한 성장의 기회를 얻으세요",
   ];
+  const kakaoClientId = process.env.REACT_APP_KAKAO_CLIENT_ID;
+  const { signIn } = useContext(AuthContext);
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [registrationType, setRegistrationType] = useState(0);
+
+  const kakaoOnSuccess = async (data) => {
+    console.log("data", data);
+    const idToken = data.response.access_token;
+
+    if (idToken) {
+      try {
+        const response = await axios.post(
+          `${baseUrl}/api/auth/kakao/callback`,
+          {
+            idToken,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        console.log("response.data12: ", response.data);
+
+        signIn(response.data.UserEmail, response.data.Password);
+        navigate("/");
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    }
+  };
+
+  const kakaoOnFailure = (error) => {
+    window.location.href = "http://localhost:3000";
+  };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -226,7 +263,8 @@ const SignUp = () => {
       isNameValid &&
       isPasswordValid &&
       isPasswordMatchValid &&
-      isCellPhoneValid
+      isCellPhoneValid &&
+      emailCertification
     ) {
       try {
         // 여기에 회원가입을 위한 API 호출 추가
@@ -256,13 +294,12 @@ const SignUp = () => {
   };
 
   const onKakaoLoginButtonClick = async () => {
-    setRegistrationType(1);
     try {
       window.location.href = `${baseUrl}/api/auth/kakao`;
     } catch (error) {
       console.log("error: ", error);
     }
-  }  
+  };
 
   // const onKakaoLoginButtonClick = async () => {
   //   try {
@@ -270,7 +307,69 @@ const SignUp = () => {
   //   } catch (error) {
   //     console.log("error: ", error);
   //   }
-  // }  
+  // }
+
+  const sendEmailButtonClick = async (e) => {
+    e.preventDefault();
+    setShowEmailInputBox(true);
+    try {
+      const response = await axios.post(
+        `${baseUrl}/api/mail/email_certification`,
+        {
+          UserEmail: email,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
+      setEmailDBToken(response.data.token);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  const emailCertificationButtonClick = async (e) => {
+    e.preventDefault();
+    if (emailDBToken === emailInputToken) {
+      try {
+        const response = await axios.post(
+          `${baseUrl}/api/mail/verify-email`,
+          {
+            email: email,
+            token: emailDBToken,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("결과", response.data.message);
+
+        // 응답 메시지에 따라 다른 작업을 수행합니다.
+        switch (response.data.message) {
+          case "토큰이 만료되었습니다. 인증 메일 재전송 하셈":
+            alert("토큰이 만료되었습니다.");
+            break;
+          case "이메일 또는 토큰이 올바르지 않습니다.":
+            alert("이메일 또는 토큰이 올바르지 않습니다.");
+            break;
+          case "이메일 인증이 완료되었습니다.":
+            alert("이메일 인증이 완료되었습니다.");
+            setEmailCertification(true);
+            setShowEmailInputBox(false);
+            break;
+          default:
+            // 다른 경우는 아무 작업도 수행하지 않습니다.
+            break;
+        }
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    } else {
+      alert("토큰이 올바르지 않습니다.");
+      return;
+    }
+  };
 
   return (
     <div className="auth-signup">
@@ -283,21 +382,51 @@ const SignUp = () => {
       </aside>
 
       <form className="form-group">
-        <div className="form-input-block">
-          <label htmlFor="email" className="form-label">
-            이메일
-          </label>
-          <input
-            className="signup-form-input"
-            type="text"
-            name="email"
-            placeholder="example@google.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={validateEmail}
-          />
-          {emailError && <p className="error-message">{emailError}</p>}
+        <div className="form-input-block-container">
+          <div className="form-input-block">
+            <label htmlFor="email" className="form-label">
+              이메일
+            </label>
+            <input
+              className="signup-form-input"
+              type="text"
+              name="email"
+              placeholder="example@google.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={validateEmail}
+            />
+            <button
+              onClick={(e) => sendEmailButtonClick(e)}
+              disabled={!email || !!emailError} // 이메일이 비어 있거나 에러가 있는 경우 비활성화
+            >
+              인증메일 전송
+            </button>
+          </div>
+          <div className="error-message-container">
+            {emailError && <p className="error-message">{emailError}</p>}
+          </div>
+
+          {showEmailInputBox && (
+            <div className="form-input-block" style={{ marginTop: "5px" }}>
+              <input
+                type="text"
+                className="signup-form-input"
+                placeholder="인증코드를 입력하세요."
+                onChange={(e) => setEmailInputToken(e.target.value)}
+              />
+              <button onClick={(e) => emailCertificationButtonClick(e)}>
+                인증코드 확인
+              </button>
+            </div>
+          )}
         </div>
+        {/* <button
+          onClick={(e) => sendEmailButtonClick(e)}
+          disabled={!email || !!emailError} // 이메일이 비어 있거나 에러가 있는 경우 비활성화
+        >
+          인증메일 전송
+        </button> */}
 
         <div className="form-input-block">
           <label htmlFor="name" className="form-label">
@@ -356,7 +485,7 @@ const SignUp = () => {
           <input
             className="signup-form-input"
             type="text"
-            name="email"
+            name="cellphone"
             placeholder="01012345678"
             value={cellphone}
             onChange={(e) => setCellPhone(e.target.value)}
@@ -380,22 +509,22 @@ const SignUp = () => {
           />
           {nicknameError && <p className="error-message">{nicknameError}</p>}
         </div>
-
-        <button className="signup-button" onClick={onSignUpButtonClick}>
-          가입하기
-        </button>
       </form>
 
+      <button className="signup-button" onClick={onSignUpButtonClick}>
+        가입하기
+      </button>
+
       <div>
-      <div className="checkbox-container">
-        <input
-          className="signup-checkbox"
-          type="checkbox"
-          checked={privacyAgree}
-          onChange={() => setPrivacyAgree(!privacyAgree)}
-        />
-        <p className="signup-checkbox-text">개인 정보 수집 및 이용에 동의</p>
-      </div>
+        <div className="checkbox-container">
+          <input
+            className="signup-checkbox"
+            type="checkbox"
+            checked={privacyAgree}
+            onChange={() => setPrivacyAgree(!privacyAgree)}
+          />
+          <p className="signup-checkbox-text">개인정보 수집 및 이용에 동의</p>
+        </div>
       </div>
       <div
         className="link"
@@ -406,16 +535,30 @@ const SignUp = () => {
       <div className="signup-social">
         <span className="social-title">간편 회원가입</span>
         <div className="social-signup-button">
-          <div className="social-button-wrapper">
+          {/* <div className="social-button-wrapper">
             <button className="kakao-login" onClick={onKakaoLoginButtonClick}>
               <img src={Kakao} alt="" />
             </button>
-          </div>
+          </div> */}
           {/* <div className="social-button-wrapper">
             <button className="google-login">
               <img className="google-logo" src={Google} alt="" />
             </button>
           </div> */}
+          <KakaoLogin
+            token={kakaoClientId}
+            onSuccess={kakaoOnSuccess}
+            onFail={kakaoOnFailure}
+            style={{
+              width: "100%",
+              padding: "10px",
+              backgroundColor: "#fae100",
+              color: "black",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          />
         </div>
       </div>
     </div>

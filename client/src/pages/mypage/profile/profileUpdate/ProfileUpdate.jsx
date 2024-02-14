@@ -262,6 +262,10 @@ const ProfileUpdate = () => {
       const token = jsCookie.get("userToken");
 
       const updatedIntro = profileInfo.Introduction;
+      if(updatedIntro.length > 101){
+        alert("최대 100 글자까지 입력 가능합니다.");
+        return;
+      }
       await axios.post(
         `${baseUrl}/api/userInfo/update-introduction`,
         { Introduction: updatedIntro },
@@ -386,7 +390,8 @@ const ProfileUpdate = () => {
 
         <div className="profile-intro-change">
           <div className="introduction-input-group">
-            <label htmlFor="introduction">자기소개 변경</label>
+            <label htmlFor="introduction">자기소개 변경 ({profileInfo.Introduction.length} / 100)</label>
+            {/* <div>{profileInfo.Introduction.length} / 100</div> */}
             <textarea
               id="introduction"
               value={profileInfo.Introduction}

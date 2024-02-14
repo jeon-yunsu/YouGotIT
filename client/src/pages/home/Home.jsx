@@ -6,7 +6,8 @@ import { main } from "../../_actions/main_action.tsx";
 
 const StarRatings = ({ rating }) => {
   const ratingToPercent = () => {
-    const score = +rating * 20;
+    // rating 값이 undefined인 경우 0으로 설정
+    const score = rating ? +rating * 20 : 0;
     return score + 1.5;
   };
 
@@ -33,6 +34,7 @@ const StarRatings = ({ rating }) => {
   );
 };
 
+
 const Home = () => {
   const nav = useNavigate();
   const [popularLecture, setPopularCourses] = useState([]);
@@ -48,7 +50,7 @@ const Home = () => {
           // 데이터를 상태에 설정
           setPopularCourses(response.data.popularLecture);
           setNewCourses(response.data.newLecture);
-
+          
         } else {
           console.error("Invalid response format:", response);
         }
@@ -59,7 +61,7 @@ const Home = () => {
     fetchData();
 
   }, []);
-
+  
   const handleSubmit = (lectureID) => {
     nav(`/lecture/${lectureID}`);
   };

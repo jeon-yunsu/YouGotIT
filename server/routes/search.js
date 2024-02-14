@@ -7,55 +7,57 @@ router.use(bodyParser.json());
 
 // 검색기능
 router.get("/:searchWord", (req, res) => {
-    const searchWord = req.params.searchWord;
-    console.log(searchWord);
-  
-    // MySQL 연결
-    mysql.getConnection((error, conn) => {
-      if (error) {
-        console.log(error);
-        res.status(500).send("Internal Server Error");
-        return;
-      }
-  
-      // SQL 쿼리 실행
-      const query = `
-        SELECT
-          l.LectureID,
-          l.LectureImageURL,
-          l.LectureTitle,
-          l.LecturePrice,
-          AVG(c.Rating) AS AverageRating
-        FROM
-          Lectures l
-        JOIN
-          LectureCategory lc ON l.LectureID = lc.LectureID
-        JOIN 
-          Comments c ON l.LectureID = c.LectureID 
-        JOIN 
-          Category c2 ON c2.CategoryID = lc.CategoryID 
-        WHERE 
-          l.LectureTitle LIKE '%${searchWord}%' OR c2.CategoryName LIKE '%${searchWord}%'
-        GROUP BY
-          l.LectureID, l.LectureImageURL, l.LectureTitle, l.LecturePrice
-        ORDER BY
-          AverageRating DESC;
+  const searchWord = req.params.searchWord;
+  console.log(searchWord);
+
+  // MySQL 연결
+  mysql.getConnection((error, conn) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    // SQL 쿼리 실행
+    const query = `
+      SELECT
+        l.LectureID,
+        l.LectureImageURL,
+        l.LectureTitle,
+        l.LecturePrice,
+        i.InstructorName,
+        IFNULL(AVG(c.Rating), 0) AS AverageRating
+      FROM
+        Lectures l
+      JOIN
+        LectureCategory lc ON l.LectureID = lc.LectureID
+      LEFT JOIN
+        Comments c ON l.LectureID = c.LectureID
+      JOIN 
+        Category c2 ON c2.CategoryID = lc.CategoryID 
+      JOIN
+    Instructor i ON l.InstructorID  = i.InstructorID
+      WHERE 
+        l.LectureTitle LIKE '%${searchWord}%' OR c2.CategoryName LIKE '%${searchWord}%'
+      GROUP BY
+        l.LectureID, l.LectureImageURL, l.LectureTitle, l.LecturePrice
+      ORDER BY
+        AverageRating DESC;
       `;
-  
-      conn.query(query, (error, results) => {
-        console.log("results:",results);
-        if (error) {
-          console.error(error);
-          res.status(500).send("Internal Server Error");
-        } else {
-          res.json(results);
-          
-        }
-  
-        // MySQL 연결 종료
-        conn.release();
-      });
+
+    conn.query(query, (error, results) => {
+      console.log("results:", results);
+      if (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.json(results);
+      }
+
+      // MySQL 연결 종료
+      conn.release();
     });
+  });
 });
 
 module.exports = router;

@@ -79,7 +79,7 @@ const Search = () => {
               />
               <div className="card-content">
                 <h2 className="card-title">{course.LectureTitle}</h2>
-                <p className="card-instructor">{course.LectureInstructor}</p>
+                <p className="card-instructor">{course.InstructorName}</p>
                 <p className="card-price">{`₩${course.LecturePrice}`}</p>
                 <StarRatings rating={course.AverageRating} />
               </div>

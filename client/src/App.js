@@ -47,7 +47,7 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: "/watchLecture/:lectureID",
+        path: "/watchlecture/:lectureID/:TOCID",
         element: <WatchLecture />
       },
 
