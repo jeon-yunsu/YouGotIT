@@ -13,6 +13,17 @@ const ProductDetail = () => {
   const [showToast, setShowToast] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
   const { currentUser } = useContext(AuthContext);
+  const [quantity, setQuantity] = useState(1); // 수량 상태 추가 및 초기값 설정
+
+  const increaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +90,62 @@ const ProductDetail = () => {
       });
   };
 
+  const buyProduct = async () => {
+    if (!currentUser) {
+        alert("로그인 후 이용해 주세요.");
+        return;
+    }
+
+    try {
+        const token = jsCookie.get("userToken");
+
+        // 서버로 결제 요청 데이터 만들기
+        const paymentData = {
+            pg: `${process.env.REACT_APP_PAYMENT_PG}`, // PG사
+            pay_method: "card", // 결제수단
+            merchant_uid: `mid_${new Date().getTime()}`, // 주문번호
+            amount: productData[0].ProductPrice * quantity, // 결제금액
+            name: productData[0].ProductName, // 주문명
+            buyer_name: currentUser.UserName, // 구매자 이름
+            buyer_email: currentUser.UserEmail, // 구매자 이메일
+        };
+
+        console.log("paymentData", paymentData);
+
+        // IMP SDK 초기화
+        const { IMP } = window;
+        IMP.init(`${process.env.REACT_APP_IMP_KG_INICIS}`);
+
+        // 결제 요청
+        IMP.request_pay(paymentData, async (response) => {
+            const { success, error_msg } = response;
+            // console.log("imp_uid1", response.imp_uid);
+            // console.log("merchant_uid1", response.merchant_uid);
+            // console.log("payment_amount1", response.paid_amount);
+            const imp_uid = response.imp_uid;
+            const merchant_uid = response.merchant_uid;
+            const payment_amount = response.paid_amount;
+            console.log("imp_uid", imp_uid)
+            console.log("merchant_uid", merchant_uid)
+            console.log("payment_amount", payment_amount)
+
+            if (success) {
+                // 성공 처리
+                console.log("결제 성공");
+                // 성공한 경우 추가 작업 수행
+            } else {
+                // 실패 처리
+                console.log("결제 실패:", error_msg);
+                // 실패한 경우 추가 작업 수행
+            }
+        });
+    } catch (error) {
+        console.error("API 호출 중 오류:", error);
+        alert("결제 요청 중 오류가 발생했습니다.");
+    }
+};
+
+
   return (
     <div className="product">
       <div className="product-container">
@@ -133,21 +200,21 @@ const ProductDetail = () => {
             <div className="pd-price">
               {productData &&
                 productData.length > 0 &&
-                productData[0].ProductPrice}
+                productData[0].ProductPrice.toLocaleString()}
               <span className="pd-currency">원</span>
             </div>
 
             <div className="pd-count-container">
               <div className="pd-count-title">수량</div>
               <div className="pd-counter">
-                <button>
+                <button onClick={decreaseQuantity}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="26"
                     height="26"
                     viewBox="0 0 26 26"
                   >
-                    <g fill="none" fill-rule="evenodd">
+                    <g fill="none" fillRule="evenodd">
                       <g fill="#4E4E4E">
                         <g>
                           <g>
@@ -169,18 +236,18 @@ const ProductDetail = () => {
                 <input
                   type="text"
                   name="quantity"
-                  readonly=""
-                  class="pd-counter__current"
-                  value="1"
+                  readOnly
+                  className="pd-counter__current" 
+                  value={quantity}
                 ></input>
-                <button>
+                <button onClick={increaseQuantity}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="26"
                     height="26"
                     viewBox="0 0 26 26"
                   >
-                    <g fill="none" fill-rule="evenodd">
+                    <g fill="none" fillRule="evenodd">
                       <g fill="#4E4E4E">
                         <g>
                           <g>
@@ -208,17 +275,24 @@ const ProductDetail = () => {
             </div>
             <hr className="divider" />
             <div className="pd-total">
-              <div className="pd-total-title">1개 상품 금액</div>
+              <div className="pd-total-title">{quantity}개 상품 금액</div>
               <div className="pd-total-price">
                 {productData &&
                   productData.length > 0 &&
-                  productData[0].ProductPrice}
+                  (
+                    productData[0].ProductPrice * quantity
+                  ).toLocaleString()}{" "}
+                {/* 가격 * 수량 계산 후 쉼표로 구분하여 출력 */}
                 <span className="pd-currency">원</span>
               </div>
             </div>
             <div className="pd-button">
-              <button className="pd-cart" onClick={addToCartHandler}>장바구니 담기</button>
-              <button className="pd-buy">바로 구매하기</button>
+              <button className="pd-cart" onClick={addToCartHandler}>
+                장바구니 담기
+              </button>
+              <button className="pd-buy" onClick={buyProduct}>
+                바로 구매하기
+              </button>
             </div>
             <div className="pd-guide">
               <div className="pd-guide-title">배송기간</div>
