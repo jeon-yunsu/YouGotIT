@@ -7,6 +7,7 @@ import { AuthContext } from "../../../context/authContext.js";
 import axios from "axios";
 import { baseUrl } from "../../../config/baseUrl";
 import KakaoLogin from "react-kakao-login";
+import SignIn from "../signIn/SignIn";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -36,8 +37,16 @@ const SignUp = () => {
   ];
   const kakaoClientId = process.env.REACT_APP_KAKAO_CLIENT_ID;
   const { signIn } = useContext(AuthContext);
-
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
   const kakaoOnSuccess = async (data) => {
     console.log("data", data);
@@ -286,20 +295,27 @@ const SignUp = () => {
         // API 호출에 대한 후속 처리 추가
         console.log("회원가입 성공:", response);
         alert(`${name}님, 환영합니다!`);
-        navigate("/");
+        setEmail("");
+        setName("");
+        setPassword("");
+        setPasswordCheck("");
+        setCellPhone("");
+        setNickName("");
+
+        openModal();
       } catch (error) {
         console.error("회원가입 중 오류 발생:", error);
       }
     }
   };
 
-  const onKakaoLoginButtonClick = async () => {
-    try {
-      window.location.href = `${baseUrl}/api/auth/kakao`;
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
+  // const onKakaoLoginButtonClick = async () => {
+  //   try {
+  //     window.location.href = `${baseUrl}/api/auth/kakao`;
+  //   } catch (error) {
+  //     console.log("error: ", error);
+  //   }
+  // };
 
   // const onKakaoLoginButtonClick = async () => {
   //   try {
@@ -511,10 +527,7 @@ const SignUp = () => {
         </div>
       </form>
 
-      <button className="signup-button" onClick={onSignUpButtonClick}>
-        가입하기
-      </button>
-
+      <br />
       <div>
         <div className="checkbox-container">
           <input
@@ -526,14 +539,15 @@ const SignUp = () => {
           <p className="signup-checkbox-text">개인정보 수집 및 이용에 동의</p>
         </div>
       </div>
-      <div
-        className="link"
-        onClick={() => {
-          navigate("/");
-        }}
-      ></div>
+
+      <button className="signup-button" onClick={onSignUpButtonClick}>
+        가입하기
+      </button>
+
+      <hr className="hr"/>
       <div className="signup-social">
-        <span className="social-title">간편 회원가입</span>
+        
+        <span className="social-title">간편 로그인</span>
         <div className="social-signup-button">
           {/* <div className="social-button-wrapper">
             <button className="kakao-login" onClick={onKakaoLoginButtonClick}>
@@ -561,7 +575,10 @@ const SignUp = () => {
           />
         </div>
       </div>
+      {isModalOpen && <div className="modal-overlay" onClick={closeModal} />}
+      {isModalOpen && <SignIn closeModal={closeModal} />}
     </div>
+    
   );
 };
 

@@ -41,6 +41,41 @@ function VideoPlayer({ src, tocId, lectureID }) {
     setVolume(value);
   };
 
+  const sendProgressToServer = async () => {
+    const currentDuration = videoRef.current.duration;
+    if (!currentDuration || isNaN(currentDuration) || currentDuration === 0) {
+      console.log("Duration is not valid yet or equals to zero");
+      return;
+    }
+    const currentTime = videoRef.current.currentTime;
+    const percentProgress = (currentTime / currentDuration) * 100;
+    console.log(`Sending progress to server: ${percentProgress}`);
+    const token = jsCookie.get("userToken");
+    const res = await axios.post(
+      `${baseUrl}/api/lecture/tocInfoSet`,
+      {
+        TOCID: tocId,
+        Progress: percentProgress, // 현재 시간 대비 진행률로 수정
+        LectureID: lectureID,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("강의 정보", res.data);
+    if (res.data.success) {
+      console.log(res.data.message);
+    } else {
+      console.log(
+        "Error occurred while sending progress to server:",
+        res.data.message
+      );
+    }
+  };
+
   useEffect(() => {
     const video = videoRef.current;
     let playIntervalId;
@@ -54,52 +89,27 @@ function VideoPlayer({ src, tocId, lectureID }) {
       setDuration(video.duration);
     };
 
-    const sendProgressToServer = async () => {
-      const currentTime = videoRef.current.currentTime;
-      // console.log(`Sending progress to server: ${currentTime}`);
-      const token = jsCookie.get("userToken");
-      const res = await axios.post(
-        `${baseUrl}/api/lecture/tocInfoSet`,
-        {
-          TOCID: tocId,
-          Progress: currentTime,
-          LectureID: lectureID
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log("강의 정보", res.data);
-      if (res.data.success) {
-        console.log(res.data.message);
-      } else {
-        console.log("Error occurred while sending progress to server:",res.data.message);
-      }
-    };
-
     const handleVideoEnd = () => {
       // 비디오가 끝났을 때
       setCurrentTime(video.duration);
       console.log("영상 끝!", video.duration);
+      // alert("영상 끝!");
 
       clearInterval(playIntervalId);
       video.removeEventListener("timeupdate", timeUpdateHandler);
 
-      if (currentTime < video.duration) {
-        sendProgressToServer();
-      }
+      sendProgressToServer();
+      // window.location.reload();
     };
 
     const handlePlayButtonClick = () => {
       playIntervalId = setInterval(() => {
         sendProgressToServer();
-      }, 20000);
+      }, 60000);
       video.addEventListener("timeupdate", timeUpdateHandler);
       video.addEventListener("ended", handleVideoEnd);
     };
+
     video.addEventListener("play", handlePlayButtonClick);
     video.addEventListener("loadedmetadata", loadedMetadataHandler);
 
@@ -109,6 +119,9 @@ function VideoPlayer({ src, tocId, lectureID }) {
       video.removeEventListener("ended", handleVideoEnd);
       video.removeEventListener("play", handlePlayButtonClick);
       video.removeEventListener("loadedmetadata", loadedMetadataHandler);
+
+      // 컴포넌트가 언마운트될 때 비디오를 중지시킴
+      video.pause();
     };
   }, [tocId]);
 
@@ -153,14 +166,14 @@ function VideoPlayer({ src, tocId, lectureID }) {
           step="0.1"
           value={volume}
           onChange={(e) => adjustVolume(parseFloat(e.target.value))}
-          style={{ padding:0 }}
+          style={{ padding: 0 }}
         />
       </div>
 
       <div>
         <div
           className="progress-bar"
-          style={{ display: "flex", flexDirection: "column", height:"100px"}}
+          style={{ display: "flex", flexDirection: "column", height: "100px" }}
         >
           <ProgressBar
             progress={Number(((currentTime / duration) * 100).toFixed(0))}

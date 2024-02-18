@@ -21,6 +21,7 @@ const lectureRoutes = require("./routes/lecture");
 const enrollmentRoutes = require("./routes/enrollment");
 const fileRoutes =  require('./img_server/fileUpload');
 const mailRoutes = require('./routes/mail');
+const storeRootes = require('./routes/store');
 
 // 미들웨어 등록
 const corsOptions = {
@@ -55,6 +56,7 @@ app.use("/api/lecture", lectureRoutes);
 app.use("/api/enrollment", enrollmentRoutes);
 app.use("/api/file", fileRoutes)
 app.use("/api/mail", mailRoutes);
+app.use("/api/store", storeRootes);
 
 app.listen(4000, () => {
   console.log("Server is listening on port 4000");

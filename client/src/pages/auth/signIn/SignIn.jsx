@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import "./style.scss";
+import { useNavigate } from "react-router-dom";
 import Logo from "../../../img/YouGotITLogo2.png";
 import { AuthContext } from "../../../context/authContext.js";
 import axios from "axios";
@@ -10,6 +11,7 @@ const SignIn = ({ closeModal }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { signIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   //JavaScript KEY
   const kakaoClientId = process.env.REACT_APP_KAKAO_CLIENT_ID;
@@ -20,9 +22,10 @@ const SignIn = ({ closeModal }) => {
 
     try {
       await signIn(username, password);
-
       closeModal();
-      window.location.reload();
+      navigate("/");
+      alert("하이요")
+      // window.location.reload();
     } catch (error) {
       console.error("인증 중 오류:", error);
 

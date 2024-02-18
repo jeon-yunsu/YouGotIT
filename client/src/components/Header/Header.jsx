@@ -78,6 +78,7 @@ const Header = () => {
     if (!searchWord || searchWord.trim().length < 2) {
       // 검색어가 없거나 2글자 미만일 때 경고창 띄우기
       alert("검색어는 2글자 이상이어야 합니다.");
+      setSearchWord("");
       return;
     }
   
@@ -95,6 +96,10 @@ const Header = () => {
   const onLogoClick = () => {
     setSearchWord("");
   };
+
+  const onStoreClick = () => {
+    navigate("/store");
+  }
 
   return (
     <div className="header">
@@ -130,6 +135,9 @@ const Header = () => {
               ))}
             </div>
           )}
+        </div>
+        <div className="store">
+          <div onClick={onStoreClick}>굿즈 스토어</div>
         </div>
         <form className="search">
           <input
@@ -185,7 +193,7 @@ const Header = () => {
                       </div>
                     </div>
                     <Link to="/mypage" className="dropdown-item">
-                      프로필 설정
+                      마이페이지
                     </Link>
                     <hr className="dropdown-hr" />
                     <button className="dropdown-item" onClick={handleLogout}>

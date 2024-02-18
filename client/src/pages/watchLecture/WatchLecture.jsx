@@ -16,7 +16,7 @@ const WatchLecture = () => {
     progress: tocData.length > 0 ? tocData[0].AttendanceRate : 0,
   });
   // console.log(typeof TOCID); // 이 코드는 TOCID의 타입을 콘솔에 출력합니다.
-  // console.log("id확인", lectureID, TOCID);
+  console.log("id확인", lectureID, TOCID);
   // console.log("currentTOCID?", currentTOCID);
   // console.log("tocdata", tocData);
 
@@ -48,7 +48,7 @@ const WatchLecture = () => {
     fetchData();
   }, [TOCID]);
 
-  // console.log("tocData", tocData);
+  console.log("tocData", tocData);
   // console.log(course)
 
   const calculateProgressBarStyle = (progress) => {

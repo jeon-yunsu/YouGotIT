@@ -281,6 +281,7 @@ router.get("/duplication-email", async (req, res) => {
   }
 });
 
+//카카오 회원가입
 router.post("/kakao/callback", async function (req, res) {
   const access_token = req.body.idToken;
   console.log("access_token", access_token);
@@ -290,6 +291,9 @@ router.post("/kakao/callback", async function (req, res) {
   let UserCellPhone = "";
   let UserNickname = "";
   let ProfileImage = "";
+  let Introduction = "나만의 스킬, 깃허브 링크 등으로 소개글을 채워보세요";
+
+  console.log(Introduction)
 
   if (access_token != null && access_token) {
     const profileUrl = "https://kapi.kakao.com/v2/user/me";
@@ -338,7 +342,7 @@ router.post("/kakao/callback", async function (req, res) {
               // console.log("hashedPassword", hashedPassword);
 
               conn.query(
-                "INSERT INTO users (UserEmail, UserName, UserCellPhone, Password, ProfileImage, UserNickname) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO users (UserEmail, UserName, UserCellPhone, Password, ProfileImage, UserNickname, Introduction) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                   UserEmail,
                   UserName,
@@ -346,6 +350,7 @@ router.post("/kakao/callback", async function (req, res) {
                   hashedPassword,
                   ProfileImage,
                   UserNickname,
+                  Introduction
                 ],
                 (err, result) => {
                   if (err) {

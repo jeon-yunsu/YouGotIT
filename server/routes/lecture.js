@@ -425,6 +425,8 @@ router.post("/add-review", async (req, res) => {
     console.log("content:", content);
     console.log("rating:", rating);
 
+    // 댓글 수 확인 쿼리
+    const countQuery = "SELECT COUNT(*) AS commentCount FROM Comments WHERE UserID = ? AND LectureID = ?";
     mysql.getConnection((error, conn) => {
       if (error) {
         console.log(error);
@@ -432,30 +434,41 @@ router.post("/add-review", async (req, res) => {
         return;
       }
 
-      conn.query(
-        "INSERT INTO Comments (UserID, LectureID, Content, WriteDate, Rating) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?);",
-        [userId, lectureId, content, rating],
-        (err, result) => {
-          console.log(result);
-          if (err) {
-            console.log(err);
-            res.status(500).send("Internal Server Error");
-            return;
-          }
-
-          // 쿼리 완료 후 연결 해제
-          conn.release();
-
-          // 응답 보내기
-          res.status(200).send("Review added successfully");
+      conn.query(countQuery, [userId, lectureId], (err, result) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send("Internal Server Error");
+          return;
         }
-      );
+
+        const commentCount = result[0].commentCount;
+        if (commentCount >= 1) {
+          // 이미 댓글을 작성한 경우
+          res.status(200).send("이미 수강평을 작성했습니다.");        } else {
+          // 댓글 추가 쿼리
+          const addCommentQuery = "INSERT INTO Comments (UserID, LectureID, Content, WriteDate, Rating) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)";
+          conn.query(addCommentQuery, [userId, lectureId, content, rating], (err, result) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send("Internal Server Error");
+              return;
+            }
+
+            // 쿼리 완료 후 연결 해제
+            conn.release();
+
+            // 응답 보내기
+            res.status(200).send("Review added successfully");
+          });
+        }
+      });
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error3");
+    res.status(500).send("Internal Server Error");
   }
 });
+
 
 //수강평 수정
 router.post("/update-review", async (req, res) => {
@@ -625,6 +638,44 @@ router.post("/tocInfoSet", (req, res) => {
           message: "이미 더 높은 진행률이 저장되어 있습니다.",
         });
       }
+    });
+  });
+});
+
+//해당 강의의 TOCID 추출
+router.get("/:lectureID/toc", (req, res) => {
+  const { lectureID } = req.params;
+  console.log("lectureID??", lectureID);
+
+  mysql.getConnection((error, conn) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    const query = `
+      SELECT 
+        lt.TOCID 
+      FROM 
+        Lectures l 
+      JOIN
+        LectureTOC lt ON lt.LectureID = l.LectureID 
+      WHERE 
+        l.LectureID = ${lectureID};
+    `;
+
+    conn.query(query, [lectureID], (error, results) => {
+      // console.log("results", results);
+      if (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.json(results);
+      }
+
+      // 여기에서 응답을 보내고 난 후에 연결을 종료해야 합니다.
+      conn.release();
     });
   });
 });

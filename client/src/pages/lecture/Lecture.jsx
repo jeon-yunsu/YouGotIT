@@ -6,6 +6,8 @@ import axios from "axios";
 import { baseUrl } from "../../config/baseUrl.js";
 import jsCookie from "js-cookie";
 import { AuthContext } from "../../context/authContext.js";
+import moment from "moment";
+import "moment/locale/ko";
 
 const StarRatings = ({ rating }) => {
   const ratingToPercent = () => {
@@ -48,6 +50,9 @@ const Lecture = () => {
   const [isEnrollment, setIsEnrollment] = useState(false);
   const [commentContent, setCommentContent] = useState("");
   const [commentRating, setCommentRating] = useState("0");
+  const renderTimeAgo = (dateString) => {
+    return moment(dateString).fromNow();
+  };
 
   const navigate = useNavigate();
 
@@ -85,21 +90,24 @@ const Lecture = () => {
 
     fetchData();
 
-    if(currentUser){
+    if (currentUser) {
       const fetchCart = async () => {
         try {
-          const response = await axios.get(`${baseUrl}/api/cart/cartlist/check`, {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              lectureId: lectureID,
-            },
-          });
-  
+          const response = await axios.get(
+            `${baseUrl}/api/cart/cartlist/check`,
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              params: {
+                lectureId: lectureID,
+              },
+            }
+          );
+
           // console.log("cart API 응답:", response);
-  
+
           if (response.data) {
             setIsInCart(true);
           } else {
@@ -109,9 +117,9 @@ const Lecture = () => {
           console.error("API 호출 중 오류:", error);
         }
       };
-  
+
       fetchCart();
-  
+
       const fetchEnrollment = async () => {
         try {
           const response = await axios.get(
@@ -123,24 +131,24 @@ const Lecture = () => {
               },
             }
           );
-  
+
           // console.log("enroll API 응답:", response);
-  
+
           setIsEnrollment(response.data);
         } catch (error) {
           console.error("API 호출 중 오류:", error);
         }
       };
-  
+
       fetchEnrollment();
     }
-    
   }, [lectureID]);
-  console.log(commentData)
+  // console.log("commentData", commentData);
 
   // console.log(categoryData);
   // console.log("isInCart:", isInCart);
   // console.log("isEnrollment", isEnrollment);
+  // console.log(commentData);
 
   const createToggleFunction = (menuIndex) => {
     return () => {
@@ -180,7 +188,7 @@ const Lecture = () => {
   const averageRating = calculateAverageRating();
 
   const watchLectureHandler = (lectureID, TOCID) => {
-    console.log("123ww", lectureID, TOCID)
+    // console.log("123ww", lectureID, TOCID);
     if (!currentUser) {
       alert("로그인 후 이용해 주세요.");
       return;
@@ -199,7 +207,7 @@ const Lecture = () => {
     } else {
       try {
         const token = jsCookie.get("userToken");
-  
+
         // 서버로 결제 요청 데이터 만들기
         const paymentData = {
           pg: `${process.env.REACT_APP_PAYMENT_PG}`, // PG사
@@ -211,20 +219,18 @@ const Lecture = () => {
           buyer_email: currentUser.UserEmail, // 구매자 이메일
         };
 
-        
-  
-        console.log("paymentData", paymentData);
-  
+        // console.log("paymentData", paymentData);
+
         // IMP SDK 초기화
         const { IMP } = window;
         IMP.init(`${process.env.REACT_APP_IMP_KG_INICIS}`);
-  
+
         // 결제 요청
         IMP.request_pay(paymentData, async (response) => {
           const { success, error_msg } = response;
-          console.log("imp_uid1", response.imp_uid);
-          console.log("merchant_uid1", response.merchant_uid);
-          console.log("payment_amount1", response.paid_amount);
+          // console.log("imp_uid1", response.imp_uid);
+          // console.log("merchant_uid1", response.merchant_uid);
+          // console.log("payment_amount1", response.paid_amount);
           const imp_uid = response.imp_uid;
           const merchant_uid = response.merchant_uid;
           const payment_amount = response.paid_amount;
@@ -242,10 +248,13 @@ const Lecture = () => {
                   withCredentials: true,
                 }
               );
-              
-              console.log("verificationResponse.data", verificationResponse.data);
+
+              // console.log(
+              //   "verificationResponse.data",
+              //   verificationResponse.data
+              // );
               const cardName = verificationResponse.data.cardName;
-              console.log("cardName", cardName);
+              // console.log("cardName", cardName);
               if (verificationResponse.data.success) {
                 // 서버로 수강 등록 요청
                 const enrollmentResponse = await axios.post(
@@ -258,10 +267,10 @@ const Lecture = () => {
                     },
                   }
                 );
-  
+
                 const paymentResponse = await axios.post(
                   `${baseUrl}/api/modify`,
-                  { lectureId: lectureID , cardName: cardName},
+                  { lectureId: lectureID, cardName: cardName },
                   {
                     withCredentials: true,
                     headers: {
@@ -269,7 +278,7 @@ const Lecture = () => {
                     },
                   }
                 );
-  
+
                 const cartResponse = await axios.post(
                   `${baseUrl}/api/cart/delete-lecture`,
                   { lectureId: lectureID },
@@ -289,7 +298,7 @@ const Lecture = () => {
                   paymentResponse.data
                 );
                 console.log("cartResponse.data", cartResponse.data);
-  
+
                 // 수강 등록이 성공한 경우
                 if (
                   enrollmentResponse.data ===
@@ -298,7 +307,7 @@ const Lecture = () => {
                   cartResponse.data === "삭제 성공"
                 ) {
                   alert("수강 등록 및 결제가 성공했습니다.");
-  
+
                   window.location.reload();
                 } else {
                   // 수강 등록이 실패한 경우에 대한 처리
@@ -327,10 +336,6 @@ const Lecture = () => {
       }
     }
   };
-  
-  
-  
-  
 
   const addToCartHandler = async () => {
     if (!currentUser) {
@@ -383,7 +388,7 @@ const Lecture = () => {
     const token = jsCookie.get("userToken");
 
     try {
-      await axios.post(
+      const responseAddReview = await axios.post(
         `${baseUrl}/api/lecture/add-review`,
         {
           LectureID: lectureID,
@@ -397,14 +402,24 @@ const Lecture = () => {
           },
         }
       );
+      // console.log("responseAddReview" , responseAddReview);
+      if (responseAddReview.data === "이미 수강평을 작성했습니다.") {
+        alert("이미 수강평을 작성했습니다.");
+        setCommentContent("");
+        setCommentRating("");
+        return;
+      }
 
       setCommentContent("");
       setCommentRating("");
-      const response = await axios.get(`${baseUrl}/api/lecture/${lectureID}`, {
-        withCredentials: true,
-      });
+      const responseGetLecture = await axios.get(
+        `${baseUrl}/api/lecture/${lectureID}`,
+        {
+          withCredentials: true,
+        }
+      );
 
-      setCommentData(response.data.comments);
+      setCommentData(responseGetLecture.data.comments);
     } catch (error) {
       console.error("API 호출 중 오류:", error);
     }
@@ -467,16 +482,22 @@ const Lecture = () => {
             </div>
 
             <div className="lecture-time">
-              {lectureData && lectureData[0] && lectureData[0].LectureTime}분
+              {lectureData &&
+                lectureData[0] &&
+                `${Math.floor(lectureData[0].LectureTime / 60)}시간 ${
+                  lectureData[0].LectureTime % 60
+                }분`}
             </div>
 
             <div className="lecture-button">
               {isEnrollment ? (
                 <button
-                  onClick={() => watchLectureHandler(lectureID, 2)}
+                  onClick={() =>
+                    watchLectureHandler(lectureID, tocData[1].TOCID)
+                  }
                   className="lecture-paid"
                 >
-                  강의시청
+                  강의보기
                 </button>
               ) : (
                 <button
@@ -597,7 +618,9 @@ const Lecture = () => {
                             <li key={subIndex}>
                               <a
                                 href="#"
-                                onClick={() => watchLectureHandler(lectureID, subMenu.TOCID)}
+                                onClick={() =>
+                                  watchLectureHandler(lectureID, subMenu.TOCID)
+                                }
                               >
                                 {subMenu.Title}
                               </a>
@@ -699,15 +722,7 @@ const Lecture = () => {
                         {comment.UserNickname}
                       </div>
                       <div className="comment-createDate">
-                        {comment.WriteDate && (
-                          <>
-                            {
-                              new Date(comment.WriteDate)
-                                .toISOString()
-                                .split("T")[0]
-                            }
-                          </>
-                        )}
+                        {comment.WriteDate && renderTimeAgo(comment.WriteDate)}
                       </div>
                     </div>
                     <div className="comment-content">{comment.Content}</div>
