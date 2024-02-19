@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 const verifyTokenAndGetUserId = require("../middleware/verifyTokenAndGetUserId");
 const axios = require("axios");
 
-//결제내역 조회
-router.get("/payment", (req, res) => {
+//결제내역 조회(강의)
+router.get("/payment-lecture", (req, res) => {
   const userId = verifyTokenAndGetUserId(req, res);
 
   if (!userId) {
@@ -58,6 +58,54 @@ router.get("/payment", (req, res) => {
   });
 });
 
+//결제내역 조회(강의)
+router.get("/payment-product", (req, res) => {
+  const userId = verifyTokenAndGetUserId(req, res);
+
+  if (!userId) {
+    res.status(400).send("User ID not found in headers");
+    return;
+  }
+
+  // MySQL 연결
+  mysql.getConnection((error, conn) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    // SQL 쿼리 실행
+    const query = `
+      SELECT 
+        p.ProductName ,
+        p.ProductPrice ,
+        DATE(pp.PaymentDate) as PaymentDate
+      FROM 
+        ProductPayments pp 
+      JOIN
+        Users u ON u.UserID = pp.UserID 
+      JOIN 
+        Product p ON p.ProductID = pp.ProductID 
+      WHERE 
+        u.UserID = '${userId}';
+  `;
+
+    conn.query(query, [userId], (error, results) => {
+      // console.log(results);
+      if (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      } else {
+        res.json(results);
+      }
+
+      // MySQL 연결 종료
+      conn.release();
+    });
+  });
+});
+
 //결제내역 추가
 router.post("/", (req, res) => {
   const userId = verifyTokenAndGetUserId(req, res);
@@ -89,6 +137,47 @@ router.post("/", (req, res) => {
       `;
 
     conn.query(query, [lectureId, userId, cardName], (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send("내부 서버 오류");
+      } else {
+        // 성공 또는 실패 여부를 클라이언트에 전달
+        const success = results.affectedRows > 0; // 삽입된 행이 있는지 확인
+        const message = success ? "결제가 성공했습니다" : "결제에 실패했습니다";
+        res.json({ success, message });
+      }
+
+      // MySQL 연결 종료
+      conn.release();
+    });
+  });
+});
+
+router.post("/payment-product", (req, res) => {
+  const userId = verifyTokenAndGetUserId(req, res);
+  const productId = req.body.productId;
+  const cardName = req.body.cardName;
+
+  if (!userId) {
+    res.status(400).send("헤더에서 사용자 ID를 찾을 수 없습니다");
+    return;
+  }
+
+  // MySQL 연결
+  mysql.getConnection((error, conn) => {
+    if (error) {
+      console.log(error);
+      res.status(500).send("내부 서버 오류");
+      return;
+    }
+
+    // SQL 쿼리 실행
+    const query = `
+        INSERT INTO ProductPayments(ProductID, UserID, PaymentDate, Payment) 
+        VALUES (?, ?, NOW(), ?)
+      `;
+
+    conn.query(query, [productId, userId, cardName], (error, results) => {
       if (error) {
         console.error(error);
         res.status(500).send("내부 서버 오류");

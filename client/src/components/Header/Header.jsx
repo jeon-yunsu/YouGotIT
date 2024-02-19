@@ -137,7 +137,7 @@ const Header = () => {
           )}
         </div>
         <div className="store">
-          <div onClick={onStoreClick}>굿즈 스토어</div>
+          <div onClick={onStoreClick} className="goods-store">굿즈 스토어</div>
         </div>
         <form className="search">
           <input

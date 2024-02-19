@@ -1,104 +1,22 @@
-.payment {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;
+.cart {
+  padding: 20px;
+  border-radius: 5px;
+  margin: 0 auto;
 
-  .list-title {
+
+  .cart-title {
     font-size: 24px;
-    margin-bottom: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
   }
 
-  .payment-card {
-    margin-top: 20px;
-  }
-
-  .payment-table {
-    width: 871px;
-    border-collapse: collapse;
-    border-radius: 10px;
-  }
-  
-  .payment-table th,
-  .payment-table td {
-    padding: 12px;
-    text-align: center;
-  }
-  
-  .payment-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-  }
-  
-  .payment-table td img {
-    max-width: 100px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-  
-  .payment-container-no {
-    min-width: 53px;
-  }
-  
-  .payment-container-name {
-    min-width: 62px;
-  }
-  
-  .payment-container-email {
-    min-width: 150px;
-  }
-  
-  .payment-container-title {
-    min-width: 246px;
-  }
-  
-  .payment-container-price {
-    min-width: 81px;
-  }
-  
-  .payment-container-date {
-    min-width: 97px;
-  }
-  
-  .payment-container-progress {
-    min-width: 67px;
-  }
-  
-  .payment-container-cancel {
-    min-width: 0px;
-  }
-  
-  .payment-no,
-  .payment-name,
-  .payment-email,
-  .payment-title,
-  .payment-price,
-  .payment-date,
-  .payment-progress {
-    font-size: 14px;
-  }
-  
-  .payment-progress {
-    font-weight: bold;
-    color: green;
-  }
-  
-  .btn-primary {
-    padding: 4px 8px;
-    background-color: #6096B4;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
+  .product-tab, .lecture-tab {
+    display: inline-block;
     cursor: pointer;
-    width: 50px;
-    font-size: 10px;
-    font-weight: 500;
-    height: 30px;
+    padding: 10px;
+    margin-right: 10px;
+    width: 100px;
+    background-color: #f8f8f8;
+    border-radius: 19px;
   }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-}  
+}

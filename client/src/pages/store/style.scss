@@ -19,6 +19,92 @@ $default-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
       //     padding: 0px;
       //   }
 
+      .app-product-sub__title {
+        line-height: 1.36;
+        letter-spacing: -0.2px;
+        color: #111;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 40px;
+        display: flex;
+
+        .app-product-sub__word {
+          display: flex;
+          margin-right: 16px;
+
+          .app-product-sub__selected-wrapper {
+            position: relative;
+            margin-right: -4px;
+
+            .app-product-sub__sort-selector {
+              position: absolute;
+              top: 100%;
+              left: 0;
+              right: 0;
+              z-index: 1;
+              display: none;
+              min-width: 173px;
+
+              .app-product-sub__sort-list {
+                margin-top: 4px;
+                color: #111;
+                background-color: #fff;
+                border-radius: 4px;
+                border: solid 1px #ddd;
+
+                .app-product-sub__sort-item {
+                  text-align: center;
+                  border: 1px solid #f8f8f8;
+                }
+              }
+
+              select {
+                position: absolute;
+                top: 0;
+                visibility: hidden;
+
+                .popular,
+                .recent {
+                  font-weight: normal;
+                  display: block;
+                  white-space-collapse: collapse;
+                  text-wrap: nowrap;
+                  min-height: 1.2em;
+                  padding: 0px 2px 1px;
+                }
+              }
+            }
+
+            .app-product-sub__selected-filter {
+              margin: 0;
+              padding: 0;
+              border: none;
+              background: none;
+              position: relative;
+              border-bottom: 2px solid #111;
+              display: flex;
+              line-height: 1.36;
+              letter-spacing: -0.2px;
+              color: #111;
+              font-size: 28px;
+              font-weight: 600;
+              justify-content: space-between;
+            }
+            .app-product-sub__selected-filter::after {
+              content: "";
+              margin-left: 18px;
+              display: block;
+              width: 20px;
+              height: 20px;
+              background-image: url(https://s3.marpple.co/files/u_29089/2021/5/original/99e339848ab8a6a98e4abd8b859a600a4963c5c81.png);
+              background-repeat: no-repeat;
+              background-size: 20px 20px;
+              margin-top: 5px;
+            }
+          }
+        }
+      }
+
       .product-card {
         display: grid;
         grid-template-columns: repeat(4, minmax(200px, 1fr));

@@ -54,9 +54,10 @@ const ProductDetail = () => {
         const token = jsCookie.get("userToken");
         // 장바구니에 담기
         await axios.post(
-          `${baseUrl}/api/cart/add-lecture`,
+          `${baseUrl}/api/cart/add-product`,
           {
-            // LectureID: lectureID,
+            ProductID : productID,
+            Quantity : quantity
           },
           {
             withCredentials: true,

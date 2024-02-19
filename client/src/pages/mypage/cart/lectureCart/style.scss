@@ -215,7 +215,7 @@ img {
         &.cart-instructor {
           color: #82ca9c;
           font-weight: bold;
-          padding: 0.5em 0 0 1em;
+          // padding: 0.5em 0 0 1em;
           &.out {
             color: #f69679;
           }
@@ -244,7 +244,6 @@ img {
       }
       .itemImg {
         width: 8em;
-        height: 73px;
         display: inline;
         padding-right: 1em;
       }
@@ -317,7 +316,7 @@ a.remove {
   a.btn {
     float: left;
     width: 15%;
-    padding: 0.75em 0;
+    // padding: 0.75em 0;
     border-radius: 0 1em 1em 0;
     text-align: center;
     border: 1px solid #82ca9c;
