@@ -66,6 +66,7 @@ const SignIn = ({ closeModal }) => {
   };
 
   const kakaoOnFailure = (error) => {
+    alert("카카오 로그인에 실패했습니다.")
     window.location.href = "http://localhost:3000";
   };
 
